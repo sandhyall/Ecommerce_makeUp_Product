@@ -1,5 +1,6 @@
 import React from "react";
 import { product } from "../Product/ProductList";
+import { Link } from "react-router-dom";
 
 
 const FeatureProduct = () => {
@@ -13,7 +14,8 @@ const FeatureProduct = () => {
             key={item.id}
             className="border rounded-lg p-4 hover:shadow-lg transition-shadow"
           >
-            <img
+             <Link to={`/product/${item._id}`}>
+              <img
               src={item.images}
               alt={item.name}
               className="w-full h-48 object-cover mb-4 rounded"
@@ -28,6 +30,8 @@ const FeatureProduct = () => {
             >
               See Details
             </button>
+             </Link>
+           
           </div>
         ))}
       </div>
