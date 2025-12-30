@@ -10,7 +10,6 @@ const Topbar = () => {
         <h1 className="text-2xl font-bold text-pink-600 capitalize">Sandhya</h1>
 
         <nav className="flex items-center gap-10">
-         
           <div className="hidden md:flex items-center gap-6">
             <Link
               to="/"
@@ -19,19 +18,19 @@ const Topbar = () => {
               Category
             </Link>
             <Link
-              to="/"
+              to="/collection/all"
               className="text-gray-600 font-medium hover:text-black transition"
             >
               All Products
             </Link>
             <Link
-              to="/"
+              to="/blog"
               className="text-gray-600 font-medium hover:text-black transition"
             >
               Blogs
             </Link>
             <Link
-              to="/"
+              to="/contactus"
               className="text-gray-600 font-medium hover:text-black transition"
             >
               Contacts
@@ -40,7 +39,9 @@ const Topbar = () => {
 
           <div className="flex items-center gap-4">
             <Search />
-            <FaBagShopping className="text-xl text-pink-600 cursor-pointer hover:text-black transition" />
+            <Link to="/cart">
+              <FaBagShopping className="text-xl text-pink-600 cursor-pointer hover:text-black transition" />
+            </Link>
           </div>
         </nav>
       </div>

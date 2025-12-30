@@ -1,41 +1,49 @@
 import React, { useRef } from "react";
 import { FaChevronRight, FaChevronLeft } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 const NewArrival = () => {
   const scrollRef = useRef(null);
 
   const products = [
-    {
-      id :1,
-      name: "Blush",
-      images: "https://picsum.photos/200?random=1",
-    },
-    {
-      id :2,
-      name: "Bronzer",
-      images: "https://picsum.photos/200?random=2",
-    },
-    {
-      id :3,
-      name: "Eyebrow",
-      images: "https://picsum.photos/200?random=3",
-    },
-    {
-      id :4,
-      name: "Eyeliner",
-      images: "https://picsum.photos/200?random=4",
-    },
-    {
-      id :5,
-      name: "EyeShadow",
-      images: "https://picsum.photos/200?random=5",
-    },
-    {
-      id :6,
-      name: "Moisture",
-      images: "https://picsum.photos/200?random=6",
-    },
-  ];
+  {
+    id: 1,
+    name: "Blush",
+    category: "Face",
+    images: "https://picsum.photos/200?random=1",
+  },
+  {
+    id: 2,
+    name: "Bronzer",
+    category: "Face",
+    images: "https://picsum.photos/200?random=2",
+  },
+  {
+    id: 3,
+    name: "Eyebrow",
+    category: "Eyes",
+    images: "https://picsum.photos/200?random=3",
+  },
+  {
+    id: 4,
+    name: "Eyeliner",
+    category: "Eyes",
+    images: "https://picsum.photos/200?random=4",
+  },
+  {
+    id: 5,
+    name: "EyeShadow",
+    category: "Eyes",
+    images: "https://picsum.photos/200?random=5",
+  },
+  {
+    id: 6,
+    name: "Moisture",
+    category: "Skincare",
+    images: "https://picsum.photos/200?random=6",
+  },
+];
+
 
   const handleLeft = () => {
     scrollRef.current.scrollLeft -= 300;
@@ -72,18 +80,24 @@ const NewArrival = () => {
             
             className="bg-white min-w-[200px] flex-shrink-0 overflow-hidden hover:scale-105 transition-transform duration-300"
           >
-            
+            <Link to={`/product/${item._id}`}>
             <img
               src={item.images}
               alt={item.name}
               className="w-full h-48 object-cover"
             />
             <div className="p-4">
+              
 
               <h3 className="text-xl font-semibold text-gray-800">
                 {item.name}
               </h3>
+               <h4 className=" font-semibold text-gray-800"> Category:{item.category}</h4>
             </div>
+            </Link>
+           
+            
+            
           </div>
         ))}
       </div>
