@@ -3,8 +3,8 @@ import { Link } from "react-router-dom";
 
 const Navbar = () => {
   return (
-    <div className="w-full bg-gray-50 border-b">
-      <nav className="max-w-7xl mx-auto px-4 py-3 flex flex-wrap gap-6 justify-center">
+    <div className="w-full bg-gray-50 border-b ">
+      <nav className="max-w-7xl mx-auto px-4 py-3 flex flex-wrap gap-6 justify-cente ">
         <Link
           to="/"
           className="text-gray-700 font-medium hover:text-black transition"
