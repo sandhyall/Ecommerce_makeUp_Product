@@ -7,6 +7,9 @@ import BestSeller from "./Component/Product/BestSeller";
 import Contactus from "./Pages/Contactus";
 import Blogs from "./Pages/Blogs";
 import CartButton from "./Component/Cart/CartButton";
+import Checkout from "./Component/Cart/Checkout";
+import Login from "./Pages/Login";
+import Register from "./Pages/Register";
 
 const App = () => {
   return (
@@ -19,6 +22,9 @@ const App = () => {
           <Route path="contactus" element ={<Contactus/>}/>
           <Route path ="blog" element ={<Blogs/>}/>
           <Route path="cart" element ={<CartButton/>}/>
+          <Route path ="checkout" element={<Checkout/>} />
+          <Route path ="login" element={<Login/>}/>
+          <Route path ="register" element={<Register/>}/>
          
         </Route>
       </Routes>

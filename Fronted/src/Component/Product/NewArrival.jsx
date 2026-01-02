@@ -80,7 +80,7 @@ const NewArrival = () => {
             
             className="bg-white min-w-[200px] flex-shrink-0 overflow-hidden hover:scale-105 transition-transform duration-300"
           >
-            <Link to={`/product/${item._id}`}>
+            <Link to={`/product/${item.id}`}>
             <img
               src={item.images}
               alt={item.name}
