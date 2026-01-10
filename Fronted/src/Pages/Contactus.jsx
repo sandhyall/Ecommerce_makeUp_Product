@@ -2,29 +2,46 @@ import React, { useState } from "react";
 import Validation from "../Component/Common/Validation";
 import { CiPhone } from "react-icons/ci";
 import { MdOutlineEmail } from "react-icons/md";
+import axios from "axios";
+
+const apiUrlS = import.meta.env.VITE_API_URLS;
 
 const Contactus = () => {
-  const forms = {
+  const initialForm = {
     name: "",
-    Email: "",
-    Message: "",
+    email: "",
+    message: "",
   };
 
-  const [contact, setContact] = useState(forms);
+  const [contact, setContact] = useState(initialForm);
   const [error, setError] = useState({});
+  const [success, setSuccess] = useState("");
 
   const handleChange = (e) => {
     setContact({ ...contact, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const validationError = Validation(contact);
-    setError(validationError);
 
-    if (Object.keys(validationError).length === 0) {
-      console.log("Form submitted successfully:", contact);
-      setContact(forms);
+    const validationError = Validation(contact);
+    if (Object.keys(validationError).length > 0) {
+      setError(validationError);
+      return;
+    }
+
+    try {
+      const res = await axios.post(
+        `${apiUrlS}/contact-insert`,
+        contact
+      );
+
+      setSuccess(res.data.msg || "Message sent successfully");
+      setError({});
+      setContact(initialForm);
+    } catch (err) {
+      setSuccess("");
+      setError({ submit: err.response?.data?.msg || "Contact Failed" });
     }
   };
 
@@ -35,7 +52,6 @@ const Contactus = () => {
       </h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-      
         <div className="space-y-6">
           <div className="flex items-start gap-3">
             <CiPhone className="text-xl mt-1" />
@@ -52,13 +68,15 @@ const Contactus = () => {
               <p className="text-gray-600">sandhya@gmail.com</p>
             </div>
           </div>
-
-          
         </div>
 
-      
         <div>
           <h2 className="text-xl font-semibold mb-4">Contact Us</h2>
+
+          {success && <p className="text-green-600 mb-2">{success}</p>}
+          {error.submit && (
+            <p className="text-red-600 mb-2">{error.submit}</p>
+          )}
 
           <form className="space-y-4" onSubmit={handleSubmit}>
             <input
@@ -67,33 +85,35 @@ const Contactus = () => {
               placeholder="Your Name"
               value={contact.name}
               onChange={handleChange}
-              className="w-full border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black"
+              className="w-full border rounded-md p-2"
             />
             {error.name && <p className="text-red-500">{error.name}</p>}
 
             <input
               type="email"
-              name="Email"
+              name="email"
               placeholder="Your Email"
-              value={contact.Email}
+              value={contact.email}
               onChange={handleChange}
-              className="w-full border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black"
+              className="w-full border rounded-md p-2"
             />
-            {error.Email && <p className="text-red-500">{error.Email}</p>}
+            {error.email && <p className="text-red-500">{error.email}</p>}
 
             <textarea
-              name="Message"
+              name="message"
               rows="4"
               placeholder="Your Message"
-              value={contact.Message}
+              value={contact.message}
               onChange={handleChange}
-              className="w-full border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-black"
+              className="w-full border rounded-md p-2"
             ></textarea>
-            {error.Message && <p className="text-red-500">{error.Message}</p>}
+            {error.message && (
+              <p className="text-red-500">{error.message}</p>
+            )}
 
             <button
               type="submit"
-              className="bg-pink-600 text-white px-6 py-2 rounded-md hover:bg-yellow-700 transition"
+              className="bg-pink-600 text-white px-6 py-2 rounded-md"
             >
               Send Message
             </button>

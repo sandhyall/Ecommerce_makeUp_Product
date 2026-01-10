@@ -1,27 +1,22 @@
-import React from 'react'
+const Validation = (form) => {
+  const error = {};
 
-const Validation=(form)=> {
-    const error ={};
-    if (!form.name || form.name.trim().length < 3) {
-    error.name = 'Name must be at least 3 characters';
+  if (!form.name || form.name.trim().length < 3) {
+    error.name = "Name must be at least 3 characters";
   }
 
   if (
     !form.email ||
-    !/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(form.email)
+    !/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(form.email)
   ) {
-    error.email = 'Enter a valid email';
-  }
-  if(!form.message || form.message.trim().length < 3){
-    error.message = 'message must b a least 3 characters';
+    error.email = "Enter a valid email";
   }
 
+  if (!form.message || form.message.trim().length < 3) {
+    error.message = "Message must be at least 3 characters";
+  }
 
-  return (
-    <div>
+  return error; 
+};
 
-    </div>
-  )
-}
-
-export default Validation
+export default Validation;

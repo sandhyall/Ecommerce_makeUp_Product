@@ -1,20 +1,44 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+const apiUrl = import.meta.env.VITE_API_URL;
 
 const Login = () => {
+  const navigate = useNavigate()
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
 
+  const [message, setMessage] = useState(""); // success message
+  const [error, setError] = useState("");     // error message
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Login Data:", formData);
-    alert("Login Successful ");
+
+    try {
+      const res = await axios.post(
+       `${apiUrl}/user-login`,
+        formData
+      );
+
+       navigate("/");
+      setMessage(res.data.msg);
+      setError("");
+    } catch (err) {
+      // handle error
+      setError(err.response?.data?.msg || "Login Failed");
+      setMessage("");
+    }
+     setFormData({
+      email: "",
+    password: "",
+    })
+   
   };
 
   return (
@@ -50,6 +74,10 @@ const Login = () => {
             Login
           </button>
         </form>
+
+         {/* Display messages */}
+        {message && <p className="text-green-600 mt-3">{message}</p>}
+        {error && <p className="text-red-600 mt-3">{error}</p>} 
 
         <p className="text-center mt-4">
           Don’t have an account?{" "}

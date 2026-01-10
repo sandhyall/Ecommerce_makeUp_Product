@@ -1,7 +1,10 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+const apiUrl = import.meta.env.VITE_API_URL;
 
 const Register = () => {
+  const navigate = useNavigate()
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -13,7 +16,7 @@ const Register = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (formData.password !== formData.confirmPassword) {
@@ -21,8 +24,28 @@ const Register = () => {
       return;
     }
 
-    console.log("Register Data:", formData);
-    alert("Registration Successful ");
+    try {
+  const res = await axios.post(
+    `${apiUrl}/user-register`,
+    formData
+  );
+  navigate("/login");
+  
+
+  console.log(res.status);     
+  console.log(res.data.msg);   
+
+} catch (error) {
+  console.log(error.response.status); 
+}
+setFormData({
+  name: "",
+  email: "",
+  password: "",
+  confirmPassword: "",
+});
+
+
   };
 
   return (
@@ -39,6 +62,7 @@ const Register = () => {
             placeholder="Full Name"
             required
             className="w-full border p-2 rounded"
+            value={formData.name}
             onChange={handleChange}
           />
 
@@ -48,6 +72,7 @@ const Register = () => {
             placeholder="Email"
             required
             className="w-full border p-2 rounded"
+            value={formData.email}
             onChange={handleChange}
           />
 
@@ -57,6 +82,7 @@ const Register = () => {
             placeholder="Password"
             required
             className="w-full border p-2 rounded"
+            value={formData.password}
             onChange={handleChange}
           />
 
@@ -66,6 +92,7 @@ const Register = () => {
             placeholder="Confirm Password"
             required
             className="w-full border p-2 rounded"
+            value={formData.confirmPassword}
             onChange={handleChange}
           />
 
