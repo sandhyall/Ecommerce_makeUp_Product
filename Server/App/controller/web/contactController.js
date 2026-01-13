@@ -23,7 +23,7 @@ const ContactInsert = async (req, res) => {
       },
     });
 
-    // 3 Send email to yourself
+   
     const info = await transporter.sendMail({
       from: `"${name}" <${email}>`, 
       to: "sandhyadahal864@gmail.com", 
