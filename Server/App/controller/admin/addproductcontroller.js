@@ -1,79 +1,56 @@
 const AddproductModel = require("../../model/addproduct");
 
-
-const AddproductInsert = (req, res) => {
-  const { name, description, price, category } = req.body;
-
-  const addProduct = new AddproductModel({
-    name,
-    description,
-    price,
-    category,
-  });
-
-  addProduct
-    .save()
-    .then(() => {
-      res.send({ status: "success", msg: "Product inserted successfully" });
-    })
-    .catch(() => {
-      res.send({ status: "error", msg: "Failed to insert product" });
-    });
-};
-
-
-const Addproductlists = async (req, res) => {
+const AddproductInsert = async (req, res) => {
   try {
-    const products = await AddproductModel.find();
-    res.send({
-      status: "success",
-      msg: "Product list fetched successfully",
-      data: products,
-    });
-  } catch (err) {
-    console.error(err);
-    res.send({ status: "error", msg: "Failed to fetch products" });
-  }
-};
-
-
-const Addproductdelete = async (req, res) => {
-  try {
-    const id = req.params.id;
-    const deleted = await AddproductModel.deleteOne({ _id: id });
-
-    if (deleted.deletedCount === 0) {
-      return res.status(404).send({ status: "error", msg: "Product not found" });
-    }
-
-    res.send({ status: "success", msg: "Product deleted successfully" });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send({ status: "error", msg: "Failed to delete product" });
-  }
-};
-
-
-const AddproductEdit = async (req, res) => {
-  try {
-    const id = req.params.id;
     const { name, description, price, category } = req.body;
 
-    const edit = await AddproductModel.findByIdAndUpdate(
-      id,
-      { name, description, price, category },
-      { new: true } 
-    );
+    const product = new AddproductModel({
+      name,
+      description,
+      price,
+      category,
+      image: req.file ? req.file.filename : "",
+    });
 
-    if (!edit) {
-      return res.status(404).send({ status: "error", msg: "Product not found" });
-    }
-
-    res.send({ status: "success", msg: "Product updated successfully", data: edit });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send({ status: "error", msg: "Failed to update product" });
+    await product.save();
+    res.send({ status: "success", msg: "Product added", data: product });
+  } catch {
+    res.status(500).send({ status: "error", msg: "Insert failed" });
   }
 };
 
-module.exports = { AddproductInsert, Addproductlists, Addproductdelete, AddproductEdit };
+const Addproductlists = async (req, res) => {
+  const products = await AddproductModel.find();
+  res.send({ status: "success", data: products });
+};
+
+const Addproductdelete = async (req, res) => {
+  await AddproductModel.findByIdAndDelete(req.params.id);
+  res.send({ status: "success", msg: "Product deleted" });
+};
+
+const AddproductEdit = async (req, res) => {
+  const updateData = {
+    name: req.body.name,
+    description: req.body.description,
+    price: req.body.price,
+    category: req.body.category,
+  };
+
+  if (req.file) updateData.image = req.file.filename;
+
+  const updated = await AddproductModel.findByIdAndUpdate(
+    req.params.id,
+    updateData,
+    { new: true }
+  );
+
+  res.send({ status: "success", data: updated });
+};
+
+module.exports = {
+  AddproductInsert,
+  Addproductlists,
+  Addproductdelete,
+  AddproductEdit,
+};

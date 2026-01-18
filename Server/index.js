@@ -15,8 +15,10 @@ app.use(express.json());
 app.use("/web/api/user", UserRoutes);
 app.use("/web/api/contact", ContactRoutes);
 app.use("/admin", AdminRoutes);
-app.use("/addproduct",AddProductRoute);
+app.use("/upload", express.static("upload"));
+app.use(express.urlencoded({ extended: true }));
 
+app.use("/addproduct", AddProductRoute);
 
 
 mongoose.connect(process.env.DB)
