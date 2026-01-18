@@ -21,6 +21,7 @@ import DashboardOverviw from "./Component/Admin/DashboardOverviw";
 /* PROTECTION */
 import PrivateRoute from "./Component/PrivateRoute/PrivateRoute";
 import DashboardProduct from "./Component/Admin/DashboardProduct";
+import DashbordOrder from "./Component/Admin/DashbordOrder";
 
 const App = () => {
   return (
@@ -55,6 +56,7 @@ const App = () => {
           <Route index element={<DashboardOverviw />} />
           <Route path="overview" element={<DashboardOverviw />} />
           <Route path="product" element={<DashboardProduct/>}/>
+          <Route path="orders" element={<DashbordOrder/>}/>
         </Route>
 
       </Routes>

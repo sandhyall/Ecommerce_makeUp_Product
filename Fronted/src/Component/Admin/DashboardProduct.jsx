@@ -11,16 +11,14 @@ const DashboardProduct = () => {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
- 
   const fetchProducts = async () => {
     try {
       const res = await axios.get(`${apiUrl}/product-get`);
-      fetchProducts();
       setProducts(res.data.data);
-      setMessage(res.data.msg);
+      setMessage("");
       setError("");
     } catch (err) {
-     setError(err.response?.data?.msg || "Failed to  product");
+      setError("Failed to fetch products");
     }
   };
 
@@ -28,14 +26,13 @@ const DashboardProduct = () => {
     fetchProducts();
   }, []);
 
-  // Delete product
   const handleDelete = async (id) => {
     try {
       await axios.delete(`${apiUrl}/delete-product/${id}`);
       setProducts(products.filter((item) => item._id !== id));
       setMessage("Product deleted successfully");
-    } catch (err) {
-      setError(err.response?.data?.msg || "Failed to delete product");
+    } catch {
+      setError("Failed to delete product");
     }
   };
 

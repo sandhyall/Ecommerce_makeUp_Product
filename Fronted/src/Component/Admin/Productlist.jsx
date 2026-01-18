@@ -19,6 +19,7 @@ const ProductList = ({
       <table className="min-w-full bg-white border rounded shadow">
         <thead>
           <tr className="bg-gray-100">
+            <th className="p-2">Image</th>
             <th className="p-2">Name</th>
             <th className="p-2">Description</th>
             <th className="p-2">Price</th>
@@ -27,19 +28,30 @@ const ProductList = ({
             <th className="p-2">Edit</th>
           </tr>
         </thead>
+
         <tbody>
           {products.length === 0 ? (
             <tr>
-              <td colSpan="6" className="text-center p-4">
+              <td colSpan="7" className="text-center p-4">
                 No products found
               </td>
             </tr>
           ) : (
             products.map((item) => (
-              <tr key={item._id} className="hover:bg-gray-50">
+              <tr key={item._id}>
+                <td className="p-2">
+                  {item.image ? (
+                    <img
+                      src={`${import.meta.env.VITE_SERVER}/upload/${item.image}`}
+                      className="w-16 h-16 object-cover rounded"
+                    />
+                  ) : (
+                    "No Image"
+                  )}
+                </td>
                 <td className="p-2">{item.name}</td>
                 <td className="p-2">{item.description}</td>
-                <td className="p-2">${item.price}</td>
+                <td className="p-2">Rs. {item.price}</td>
                 <td className="p-2">{item.category}</td>
                 <td className="p-2">
                   <button
