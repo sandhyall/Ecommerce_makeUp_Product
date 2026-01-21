@@ -1,17 +1,11 @@
 import React from "react";
 
-const ProductList = ({
-  products,
-  handleDelete,
-  setEditProduct,
-  message,
-  error,
-}) => {
+const ProductList = ({ products, handleDelete, setEditProduct, message, error }) => {
+  const serverUrl = import.meta.env.VITE_SERVER;
+
   return (
-    <div className="overflow-x-auto">
-      <h2 className="text-2xl font-bold mb-4 text-center">
-        Available Products
-      </h2>
+    <div className="overflow-x-auto mt-8">
+      <h2 className="text-2xl font-bold mb-4 text-center">Available Products</h2>
 
       {message && <p className="text-green-500 text-center">{message}</p>}
       {error && <p className="text-red-500 text-center">{error}</p>}
@@ -28,7 +22,6 @@ const ProductList = ({
             <th className="p-2">Edit</th>
           </tr>
         </thead>
-
         <tbody>
           {products.length === 0 ? (
             <tr>
@@ -38,12 +31,13 @@ const ProductList = ({
             </tr>
           ) : (
             products.map((item) => (
-              <tr key={item._id}>
+              <tr key={item._id} className="text-center">
                 <td className="p-2">
                   {item.image ? (
                     <img
-                      src={`${import.meta.env.VITE_SERVER}/upload/${item.image}`}
-                      className="w-16 h-16 object-cover rounded"
+                      src={`${serverUrl}/upload/${item.image}`}
+                      alt={item.name}
+                      className="w-16 h-16 object-cover mx-auto rounded"
                     />
                   ) : (
                     "No Image"

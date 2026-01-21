@@ -22,6 +22,7 @@ import DashboardOverviw from "./Component/Admin/DashboardOverviw";
 import PrivateRoute from "./Component/PrivateRoute/PrivateRoute";
 import DashboardProduct from "./Component/Admin/DashboardProduct";
 import DashbordOrder from "./Component/Admin/DashbordOrder";
+import View from "./Component/Admin/View";
 
 const App = () => {
   return (
@@ -57,6 +58,7 @@ const App = () => {
           <Route path="overview" element={<DashboardOverviw />} />
           <Route path="product" element={<DashboardProduct/>}/>
           <Route path="orders" element={<DashbordOrder/>}/>
+          <Route path="orders/view/:id" element={<View />} />
         </Route>
 
       </Routes>

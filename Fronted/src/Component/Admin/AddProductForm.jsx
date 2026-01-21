@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-const apiUrl = import.meta.env.VITE_API;
-
 const AddProductForm = ({
   fetchProducts,
   editProduct,
@@ -20,6 +18,22 @@ const AddProductForm = ({
   const [formProduct, setFormProduct] = useState(initialState);
   const [selectedPhoto, setSelectedPhoto] = useState(null);
 
+  // Populate form when editing
+  useEffect(() => {
+    if (editProduct) {
+      setFormProduct({
+        name: editProduct.name,
+        description: editProduct.description,
+        price: editProduct.price,
+        category: editProduct.category,
+      });
+      setSelectedPhoto(null);
+    } else {
+      setFormProduct(initialState);
+      setSelectedPhoto(null);
+    }
+  }, [editProduct]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormProduct({ ...formProduct, [name]: value });
@@ -29,21 +43,9 @@ const AddProductForm = ({
     setSelectedPhoto(e.target.files[0]);
   };
 
-  useEffect(() => {
-    if (editProduct) {
-      setFormProduct({
-        name: editProduct.name,
-        description: editProduct.description,
-        price: editProduct.price,
-        category: editProduct.category,
-      });
-    } else {
-      setFormProduct(initialState);
-    }
-  }, [editProduct]);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const apiUrl = import.meta.env.VITE_API;
 
     try {
       const formData = new FormData();
@@ -57,14 +59,17 @@ const AddProductForm = ({
       }
 
       if (editProduct) {
-        await axios.put(
-          `${apiUrl}/product-edit/${editProduct._id}`,
-          formData
-        );
+        // Update existing product
+        await axios.put(`${apiUrl}/product-edit/${editProduct._id}`, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
         setMessage("Product updated successfully");
         setEditProduct(null);
       } else {
-        await axios.post(`${apiUrl}/insert`, formData);
+        // Add new product
+        await axios.post(`${apiUrl}/insert`, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
         setMessage("Product added successfully");
       }
 
@@ -81,7 +86,6 @@ const AddProductForm = ({
     <form
       onSubmit={handleSubmit}
       className="bg-white p-6 rounded-xl shadow-md max-w-md mx-auto space-y-4"
-      encType="multipart/form-data"
     >
       <h2 className="text-xl font-bold text-center">
         {editProduct ? "Edit Product" : "Add Product"}
@@ -95,7 +99,6 @@ const AddProductForm = ({
         className="w-full p-2 border rounded"
         required
       />
-
       <textarea
         name="description"
         value={formProduct.description}
@@ -104,7 +107,6 @@ const AddProductForm = ({
         className="w-full p-2 border rounded"
         required
       />
-
       <input
         type="number"
         name="price"
@@ -114,7 +116,6 @@ const AddProductForm = ({
         className="w-full p-2 border rounded"
         required
       />
-
       <input
         name="category"
         value={formProduct.category}
@@ -123,14 +124,12 @@ const AddProductForm = ({
         className="w-full p-2 border rounded"
         required
       />
-
       <input
         type="file"
         accept="image/*"
         onChange={handlePhoto}
-        className="w-full border p-2 rounded"
+        className="w-full p-2 border rounded"
       />
-
       <button className="w-full bg-blue-600 text-white py-2 rounded">
         {editProduct ? "Update Product" : "Add Product"}
       </button>

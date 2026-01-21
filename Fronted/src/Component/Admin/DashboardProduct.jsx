@@ -3,21 +3,20 @@ import axios from "axios";
 import AddProductForm from "./AddProductForm";
 import ProductList from "./Productlist";
 
-const apiUrl = import.meta.env.VITE_API;
-
 const DashboardProduct = () => {
   const [products, setProducts] = useState([]);
   const [editProduct, setEditProduct] = useState(null);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
+  const apiUrl = import.meta.env.VITE_API;
+
   const fetchProducts = async () => {
     try {
       const res = await axios.get(`${apiUrl}/product-get`);
       setProducts(res.data.data);
-      setMessage("");
       setError("");
-    } catch (err) {
+    } catch {
       setError("Failed to fetch products");
     }
   };
@@ -29,7 +28,7 @@ const DashboardProduct = () => {
   const handleDelete = async (id) => {
     try {
       await axios.delete(`${apiUrl}/delete-product/${id}`);
-      setProducts(products.filter((item) => item._id !== id));
+      setProducts(products.filter((p) => p._id !== id));
       setMessage("Product deleted successfully");
     } catch {
       setError("Failed to delete product");
