@@ -7,8 +7,13 @@ const AddproductSchema = new mongoose.Schema(
     description: { type: String, required: true },
     price: { type: Number, required: true },
     category: { type: String, required: true },
+    isNewArrival: { type: Boolean, default: true } ,
+    isFeatureproduct: { type: Boolean, default: false}
   },
-  { timestamps: true }
+  { timestamps: true } 
 );
 
 module.exports = mongoose.model("AddProduct", AddproductSchema);
+
+
+

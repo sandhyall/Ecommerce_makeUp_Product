@@ -4,15 +4,23 @@ const {
   Addproductlists,
   Addproductdelete,
   AddproductEdit,
+  getSingleProduct,
+  ArrivalProduct,
+  Featureproduct,
 } = require("../../controller/admin/addproductcontroller");
 
 const upload = require("../../Middleware/multer");
+const Router = express.Router();
 
-const router = express.Router();
+Router.post("/insert", upload.single("image"), AddproductInsert);
+Router.get("/product-get", Addproductlists);
 
-router.post("/insert", upload.single("image"), AddproductInsert);
-router.get("/product-get", Addproductlists);
-router.delete("/delete-product/:id", Addproductdelete);
-router.put("/product-edit/:id", upload.single("image"), AddproductEdit);
 
-module.exports = { AddProductRoute: router };
+Router.get("/arrival", ArrivalProduct);
+Router.get("/feature", Featureproduct);
+Router.get("/:id", getSingleProduct);
+
+Router.delete("/delete-product/:id", Addproductdelete);
+Router.put("/product-edit/:id", upload.single("image"), AddproductEdit);
+
+module.exports = Router;

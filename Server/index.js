@@ -6,15 +6,17 @@ require("dotenv").config();
 const UserRoutes = require("./App/router/web/userRoutes");
 const ContactRoutes = require("./App/router/web/contactRoute");
 const AdminRoutes = require("./App/router/admin/adminlogin");
-const { AddProductRoute } = require("./App/router/admin/Addproductroute");
+
 const { OrderRoute } = require("./App/router/admin/orderroute");
+
+const Router = require("./App/router/admin/Addproductroute");
 
 const app = express();
 
 app.use(
   cors({
     origin: "http://localhost:5173",
-  })
+  }),
 );
 
 app.use(express.json());
@@ -26,7 +28,7 @@ app.use("/admin", AdminRoutes);
 app.use(express.urlencoded({ extended: true }));
 app.use("/upload", express.static("upload"));
 
-app.use("/addproduct", AddProductRoute);
+app.use("/addproduct", Router);
 app.use("/order", OrderRoute);
 
 mongoose
