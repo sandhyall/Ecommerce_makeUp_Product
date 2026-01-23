@@ -5,20 +5,18 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./Component/UserLayout/Layout";
 import Home from "./Pages/Home";
 import Collectionpage from "./Pages/Collectionpage";
-import BestSeller from "./Component/Product/BestSeller";
 import Contactus from "./Pages/Contactus";
 import Blogs from "./Pages/Blogs";
 import CartButton from "./Component/Cart/CartButton";
 import Checkout from "./Component/Cart/Checkout";
 import Login from "./Pages/Login";
 import Register from "./Pages/Register";
+import ProductDetails from "./Pages/ProductDetails";
 
 /* ADMIN */
 import Adminlogin from "./Pages/Adminlogin";
 import AdminLayout from "./Component/Admin/AdminLayout";
 import DashboardOverviw from "./Component/Admin/DashboardOverviw";
-
-/* PROTECTION */
 import PrivateRoute from "./Component/PrivateRoute/PrivateRoute";
 import DashboardProduct from "./Component/Admin/DashboardProduct";
 import DashbordOrder from "./Component/Admin/DashbordOrder";
@@ -28,12 +26,11 @@ const App = () => {
   return (
     <BrowserRouter>
       <Routes>
-
         {/* USER */}
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
-          <Route path="collection/:collection" element={<Collectionpage />} />
-          <Route path="product/:id" element={<BestSeller />} />
+          <Route path="collection/:collection"element={<Collectionpage />} />
+          <Route path="product/:id" element={<ProductDetails />} /> {/* matches link */}
           <Route path="contactus" element={<Contactus />} />
           <Route path="blog" element={<Blogs />} />
           <Route path="cart" element={<CartButton />} />
@@ -56,11 +53,10 @@ const App = () => {
         >
           <Route index element={<DashboardOverviw />} />
           <Route path="overview" element={<DashboardOverviw />} />
-          <Route path="product" element={<DashboardProduct/>}/>
-          <Route path="orders" element={<DashbordOrder/>}/>
+          <Route path="product" element={<DashboardProduct />} />
+          <Route path="orders" element={<DashbordOrder />} />
           <Route path="orders/view/:id" element={<View />} />
         </Route>
-
       </Routes>
     </BrowserRouter>
   );

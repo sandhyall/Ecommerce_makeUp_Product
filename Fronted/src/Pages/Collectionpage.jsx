@@ -1,105 +1,69 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { Link } from "react-router-dom";
 import FiltersideBar from "../Component/Product/FiltersideBar";
 import SortFilter from "../Component/Product/SortFilter";
 
 const Collectionpage = () => {
-  const product = [
-    {
-      id: 1,
-      name: "Matte Lipstick",
-      category: "Lips",
-      brand: "Maybelline",
-      price: 950,
-      images: "https://picsum.photos/200?random=1",
-    },
-    {
-      id: 2,
-      name: "Liquid Lipstick",
-      category: "Lips",
-      brand: "Lakme",
-      price: 1100,
-      images: "https://picsum.photos/200?random=2",
-    },
-    {
-      id: 3,
-      name: "Hydrating Foundation",
-      category: "Face",
-      brand: "L’Oreal",
-      price: 1800,
-      images: "https://picsum.photos/200?random=3",
-    },
-    {
-      id: 4,
-      name: "BB Cream",
-      category: "Face",
-      brand: "Nykaa",
-      price: 750,
-      images: "https://picsum.photos/200?random=4",
-    },
-    {
-      id: 5,
-      name: "Eyeliner",
-      category: "Eyes",
-      brand: "Maybelline",
-      price: 650,
-      images: "https://picsum.photos/200?random=5",
-    },
-    {
-      id: 6,
-      name: "Mascara",
-      category: "Eyes",
-      brand: "Lakme",
-      price: 900,
-      images: "https://picsum.photos/200?random=6",
-    },
-    {
-      id: 7,
-      name: "Face Serum",
-      category: "Skincare",
-      brand: "L’Oreal",
-      price: 2200,
-      images: "https://picsum.photos/200?random=7",
-    },
-    {
-      id: 8,
-      name: "Moisturizer",
-      category: "Skincare",
-      brand: "Nykaa",
-      price: 1200,
-      images: "https://picsum.photos/200?random=8",
-    },
-  ];
+  const [products, setProducts] = useState([]);
+  const apiUrl = import.meta.env.VITE_API;
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await axios.get(`${apiUrl}/product-get`);
+        setProducts(res.data.data || res.data); 
+      } catch (err) {
+        console.error("Failed to fetch products", err);
+      }
+    };
+    fetchProducts();
+  }, [apiUrl]);
 
   return (
-    <div className="max-w-7xl mx-auto px-4">
-      <h1 className="font-bold text-2xl text-center my-6">All Products</h1>
+    <div className="max-w-7xl mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold text-center mb-8 text-gray-900">
+        All Products
+      </h1>
 
-      <div className="flex gap-6">
-        <div className="w-1/4">
+      <div className="flex flex-col lg:flex-row gap-6">
+        <div className="w-full lg:w-1/4">
           <FiltersideBar />
+          <div className="mt-6 lg:mt-0">
+            <SortFilter />
+          </div>
         </div>
 
-        <div className="w-3/4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {product.map((item) => (
-            <div
-              key={item.id}
-              className="border p-4 rounded shadow-sm hover:shadow-md"
-            >
-                
-                <img src={item.images} alt={item.name} />
-              <h2 className="font-semibold">{item.name}</h2>
-              <p className="text-sm text-gray-600">Brand:{item.brand}</p>
-              <p className="text-sm"> Category:{item.category}</p>
-              <p className="font-bold mt-2">NPR: {item.price}</p>
-            </div>
-          ))}
-        </div>
-        <div className="flex gap-6 ">
-            <div className="w-1/4">
-            <SortFilter/>
+        <div className="w-full lg:w-3/4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
+          {products.length === 0 ? (
+            <p className="text-center col-span-full text-gray-500 py-10">
+              No products found
+            </p>
+          ) : (
+            products.map((item) => (
+              <div
+                key={item._id}
+                className="border rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition"
+              >
+                <Link to={`/product/${item._id}`}>
+                  <img
+                    src={`${import.meta.env.VITE_SERVER}/upload/${item.image}`}
+                    alt={item.name}
+                    className="w-full aspect-square object-cover rounded-md mb-3"
+                  />
+                </Link>
 
-            </div>
-             
+                <h2 className="font-medium text-base text-gray-900 leading-tight">
+                  {item.name}
+                </h2>
+                <p className="text-xs text-gray-500">Brand: {item.brand || "-"}</p>
+                <p className="text-xs text-gray-500">Category: {item.category}</p>
+                <p className="font-semibold text-sm text-gray-900 mt-1">
+                  NPR {item.price}
+                </p>
+              </div>
+            ))
+          )}
         </div>
       </div>
     </div>

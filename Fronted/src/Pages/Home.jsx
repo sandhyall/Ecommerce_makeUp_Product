@@ -12,7 +12,7 @@ const Home=()=> {
         <NewArrival/>
         <GiftPurchass/>
         <FeatureProduct/>
-        <BestSeller/>
+        {/* <BestSeller/> */}
         </div>
   )
 }

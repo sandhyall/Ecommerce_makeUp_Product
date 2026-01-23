@@ -10,7 +10,7 @@ const ProductList = ({ products, handleDelete, setEditProduct, message, error })
       {message && <p className="text-green-500 text-center">{message}</p>}
       {error && <p className="text-red-500 text-center">{error}</p>}
 
-      <table className="min-w-full bg-white border rounded shadow">
+      <table className="w-full bg-white border rounded shadow">
         <thead>
           <tr className="bg-gray-100">
             <th className="p-2">Image</th>

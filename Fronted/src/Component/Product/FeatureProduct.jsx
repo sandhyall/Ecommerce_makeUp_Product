@@ -1,37 +1,42 @@
-import React from "react";
-import { product } from "../Product/ProductList";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-
+import axios from "axios";
 
 const FeatureProduct = () => {
-      
+  const apiUrl = import.meta.env.VITE_API;
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await axios.get(`${apiUrl}/feature`);
+        setProducts(res.data.data || []);
+      } catch (err) {
+        console.error("Failed to fetch products", err);
+      }
+    };
+    fetchProducts();
+  }, [apiUrl]);
+
   return (
     <div className="px-4 py-8">
       <h2 className="text-3xl font-bold mb-6 text-center">Featured Products</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {product.map((item) => (
+        {products.map((item) => (
           <div
-            key={item.id}
+            key={item._id}
             className="border rounded-lg p-4 hover:shadow-lg transition-shadow"
           >
-             <Link to={`/product/${item._id}`}>
+            <Link to={`/product/${item._id}`}>
               <img
-              src={item.images}
-              alt={item.name}
-              className="w-full h-48 object-cover mb-4 rounded"
-            />
-            <h3 className="text-lg font-semibold">{item.name}</h3>
-            <p className="text-gray-600">Category: {item.category}</p>
-            <p className="text-black ">Rs. {item.price}</p>
-            <button
-              className="bg-pink-500 text-white px-5 py-2 rounded-md 
-                     hover:bg-pink-600 transition duration-200"
-                     
-            >
-              See Details
-            </button>
-             </Link>
-           
+                src={`${import.meta.env.VITE_SERVER}/upload/${item.image}`}
+                alt={item.name}
+                className="w-full h-48 object-cover mb-4 rounded"
+              />
+              <h3 className="text-lg font-semibold">{item.name}</h3>
+              <p className="text-gray-600">Category: {item.category}</p>
+              <p className="text-black">Rs. {item.price}</p>
+            </Link>
           </div>
         ))}
       </div>

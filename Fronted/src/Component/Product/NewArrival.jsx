@@ -1,57 +1,27 @@
-import React, { useRef } from "react";
+import axios from "axios";
+import React, { useEffect, useRef, useState } from "react";
 import { FaChevronRight, FaChevronLeft } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
 const NewArrival = () => {
   const scrollRef = useRef(null);
+  const [products, setProducts] = useState([]);
+  const apiUrl = import.meta.env.VITE_API;
 
-  const products = [
-  {
-    id: 1,
-    name: "Blush",
-    category: "Face",
-    images: "https://picsum.photos/200?random=1",
-  },
-  {
-    id: 2,
-    name: "Bronzer",
-    category: "Face",
-    images: "https://picsum.photos/200?random=2",
-  },
-  {
-    id: 3,
-    name: "Eyebrow",
-    category: "Eyes",
-    images: "https://picsum.photos/200?random=3",
-  },
-  {
-    id: 4,
-    name: "Eyeliner",
-    category: "Eyes",
-    images: "https://picsum.photos/200?random=4",
-  },
-  {
-    id: 5,
-    name: "EyeShadow",
-    category: "Eyes",
-    images: "https://picsum.photos/200?random=5",
-  },
-  {
-    id: 6,
-    name: "Moisture",
-    category: "Skincare",
-    images: "https://picsum.photos/200?random=6",
-  },
-];
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await axios.get(`${apiUrl}/arrival`);
+        setProducts(res.data.data || []);
+      } catch (err) {
+        console.error("Failed to fetch products", err);
+      }
+    };
+    fetchProducts();
+  }, [apiUrl]);
 
-
-  const handleLeft = () => {
-    scrollRef.current.scrollLeft -= 300;
-  };
-
-  const handleRight = () => {
-    scrollRef.current.scrollLeft += 300;
-  };
+  const handleLeft = () => (scrollRef.current.scrollLeft -= 300);
+  const handleRight = () => (scrollRef.current.scrollLeft += 300);
 
   return (
     <div className="max-w-9xl mx-auto px-8 py-3 relative">
@@ -76,28 +46,27 @@ const NewArrival = () => {
       >
         {products.map((item) => (
           <div
-            key={item.id}
-            
+            key={item._id}
             className="bg-white min-w-[200px] flex-shrink-0 overflow-hidden hover:scale-105 transition-transform duration-300"
           >
-            <Link to={`/product/${item.id}`}>
-            <img
-              src={item.images}
-              alt={item.name}
-              className="w-full h-48 object-cover"
-            />
-            <div className="p-4">
-              
-
-              <h3 className="text-xl font-semibold text-gray-800">
-                {item.name}
-              </h3>
-               <h4 className=" font-semibold text-gray-800"> Category:{item.category}</h4>
-            </div>
+            <Link to={`/product/${item._id}`}>
+              <div className="relative">
+                <img
+                  src={`${import.meta.env.VITE_SERVER}/upload/${item.image}`}
+                  alt={item.name}
+                  className="w-full h-48 object-cover"
+                />
+                <span className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded">
+                  New
+                </span>
+              </div>
+              <div className="p-4">
+                <h3 className="text-xl font-semibold text-gray-800">{item.name}</h3>
+                <h4 className="font-semibold text-gray-800">
+                  Category: {item.category}
+                </h4>
+              </div>
             </Link>
-           
-            
-            
           </div>
         ))}
       </div>
