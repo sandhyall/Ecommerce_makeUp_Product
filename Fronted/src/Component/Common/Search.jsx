@@ -1,44 +1,62 @@
-import React, { useState } from "react";
+import axios from "axios";
+import { useState } from "react";
 
 const Search = () => {
   const [search, setSearch] = useState("");
+  const [products, setProducts] = useState([]);
+  const [error, setError] = useState("");
 
-  const handleChange = (e) => {
-    setSearch(e.target.value);
-  };
+  const handleSearch = async (e) => {
+    const value = e.target.value;
+    setSearch(value);
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    if (!search.trim()) return;
+    if (!value.trim()) {
+      setProducts([]);
+      return;
+    }
 
-    console.log("submitted successfully", search);
-    setSearch("");
+    try {
+      const res = await axios.get(
+        `http://localhost:8000/searchproduct/search?search=${value}`
+      );
+
+      // Make sure res.data is array
+      if (Array.isArray(res.data)) {
+        setProducts(res.data);
+        setError("");
+      } else {
+        setProducts([]);
+        setError("Search failed");
+      }
+    } catch (err) {
+      console.error("Search error", err);
+      setError("Search failed");
+      setProducts([]);
+    }
   };
 
   return (
-    <div className="flex ">
-      <form
-        onSubmit={handleSearch}
-        className="flex items-center gap-2 bg-white p-3 rounded-lg shadow-md"
-      >
-        <input
-          type="text"
-          name="search"
-          placeholder="Search here..."
-          value={search}
-          onChange={handleChange}
-          className=" px-4 py-2 border border-gray-300 rounded-md 
-                     focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
+    <div>
+      <input
+        type="text"
+        placeholder="Search product..."
+        value={search}
+        onChange={handleSearch}
+      />
 
-        <button
-          type="submit"
-          className="bg-pink-500 text-white px-5 py-2 rounded-md 
-                     hover:bg-pink-600 transition duration-200"
-        >
-          Search
-        </button>
-      </form>
+      {error && <p>{error}</p>}
+
+      <div>
+        {products.length === 0 && search && <p>No product found</p>}
+
+        {products.map((item) => (
+          <div key={item._id}>
+            <h4>{item.name}</h4>
+            <p>{item.category}</p>
+            <p>Rs. {item.price}</p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

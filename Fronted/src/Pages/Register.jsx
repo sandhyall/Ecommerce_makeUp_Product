@@ -4,7 +4,7 @@ import axios from "axios";
 const apiUrl = import.meta.env.VITE_API_URL;
 
 const Register = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -18,34 +18,20 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (formData.password !== formData.confirmPassword) {
       alert("Passwords do not match");
       return;
     }
 
     try {
-  const res = await axios.post(
-    `${apiUrl}/user-register`,
-    formData
-  );
-  navigate("/login");
-  
+      const res = await axios.post(`${apiUrl}/user-register`, formData);
+      alert(res.data.msg || "Registered successfully");
+      navigate("/login");
+    } catch (err) {
+      alert(err.response?.data?.msg || "Registration failed");
+    }
 
-  console.log(res.status);     
-  console.log(res.data.msg);   
-
-} catch (error) {
-  console.log(error.response.status); 
-}
-setFormData({
-  name: "",
-  email: "",
-  password: "",
-  confirmPassword: "",
-});
-
-
+    setFormData({ name: "", email: "", password: "", confirmPassword: "" });
   };
 
   return (
@@ -61,41 +47,37 @@ setFormData({
             name="name"
             placeholder="Full Name"
             required
-            className="w-full border p-2 rounded"
             value={formData.name}
             onChange={handleChange}
+            className="w-full border p-2 rounded"
           />
-
           <input
             type="email"
             name="email"
             placeholder="Email"
             required
-            className="w-full border p-2 rounded"
             value={formData.email}
             onChange={handleChange}
+            className="w-full border p-2 rounded"
           />
-
           <input
             type="password"
             name="password"
             placeholder="Password"
             required
-            className="w-full border p-2 rounded"
             value={formData.password}
             onChange={handleChange}
+            className="w-full border p-2 rounded"
           />
-
           <input
             type="password"
             name="confirmPassword"
             placeholder="Confirm Password"
             required
-            className="w-full border p-2 rounded"
             value={formData.confirmPassword}
             onChange={handleChange}
+            className="w-full border p-2 rounded"
           />
-
           <button
             type="submit"
             className="w-full bg-pink-600 text-white py-2 rounded hover:bg-pink-700"

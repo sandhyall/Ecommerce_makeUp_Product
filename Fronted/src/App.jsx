@@ -21,6 +21,8 @@ import PrivateRoute from "./Component/PrivateRoute/PrivateRoute";
 import DashboardProduct from "./Component/Admin/DashboardProduct";
 import DashbordOrder from "./Component/Admin/DashbordOrder";
 import View from "./Component/Admin/View";
+import ThankYou from "./Component/Common/Thankyou";
+import MyOrders from "./Component/Cart/MyOrders";
 
 const App = () => {
   return (
@@ -35,6 +37,8 @@ const App = () => {
           <Route path="blog" element={<Blogs />} />
           <Route path="cart" element={<CartButton />} />
           <Route path="checkout" element={<Checkout />} />
+           <Route path="/thank-you" element={<ThankYou/>} />
+            <Route path="/my-orders" element={<MyOrders/>} />
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
         </Route>

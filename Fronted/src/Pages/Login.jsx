@@ -4,14 +4,10 @@ import axios from "axios";
 const apiUrl = import.meta.env.VITE_API_URL;
 
 const Login = () => {
-  const navigate = useNavigate()
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
-
-  const [message, setMessage] = useState(""); // success message
-  const [error, setError] = useState("");     // error message
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -21,24 +17,22 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const res = await axios.post(
-       `${apiUrl}/user-login`,
-        formData
-      );
+      const res = await axios.post(`${apiUrl}/user-login`, formData);
 
-       navigate("/");
-      setMessage(res.data.msg);
-      setError("");
+      if (res.data.token) {
+        localStorage.setItem("token", res.data.token);
+        setMessage("Logged in successfully!");
+        setError("");
+        navigate("/");
+      } else {
+        setError(res.data.msg || "Login failed");
+      }
     } catch (err) {
-      // handle error
-      setError(err.response?.data?.msg || "Login Failed");
+      setError(err.response?.data?.msg || "Login failed");
       setMessage("");
     }
-     setFormData({
-      email: "",
-    password: "",
-    })
-   
+
+    setFormData({ email: "", password: "" });
   };
 
   return (
@@ -54,19 +48,19 @@ const Login = () => {
             name="email"
             placeholder="Email"
             required
-            className="w-full border p-2 rounded"
+            value={formData.email}
             onChange={handleChange}
+            className="w-full border p-2 rounded"
           />
-
           <input
             type="password"
             name="password"
             placeholder="Password"
             required
-            className="w-full border p-2 rounded"
+            value={formData.password}
             onChange={handleChange}
+            className="w-full border p-2 rounded"
           />
-
           <button
             type="submit"
             className="w-full bg-pink-600 text-white py-2 rounded hover:bg-pink-700"
@@ -75,9 +69,8 @@ const Login = () => {
           </button>
         </form>
 
-         {/* Display messages */}
         {message && <p className="text-green-600 mt-3">{message}</p>}
-        {error && <p className="text-red-600 mt-3">{error}</p>} 
+        {error && <p className="text-red-600 mt-3">{error}</p>}
 
         <p className="text-center mt-4">
           Don’t have an account?{" "}
