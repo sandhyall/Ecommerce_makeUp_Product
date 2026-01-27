@@ -7,9 +7,11 @@ const UserRoutes = require("./App/router/web/userRoutes");
 const ContactRoutes = require("./App/router/web/contactRoute");
 const AdminRoutes = require("./App/router/admin/adminlogin");
 
-const { OrderRoute } = require("./App/router/admin/orderroute");
+const OrderRoutes = require("./App/router/admin/orderroute");
 
 const Router = require("./App/router/admin/Addproductroute");
+const SearchRoute = require("./App/router/web/searchRoutes");
+const { CartRoute } = require("./App/router/admin/addcartRouter");
 
 const app = express();
 
@@ -29,7 +31,12 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/upload", express.static("upload"));
 
 app.use("/addproduct", Router);
-app.use("/order", OrderRoute);
+
+app.use("/order", OrderRoutes);
+
+app.use("/searchproduct", SearchRoute);
+
+app.use("/cart", CartRoute);
 
 mongoose
   .connect(process.env.DB)

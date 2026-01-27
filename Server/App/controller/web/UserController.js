@@ -1,4 +1,5 @@
 const bcrypt = require("bcrypt");
+ jwt = require('jsonwebtoken');
 const usermodels = require("../../model/usermodel");
 
 // Register
@@ -45,7 +46,19 @@ const RegisterLogin = async (req, res) => {
       return res.status(400).send({ msg: "Password does not match" });
     }
 
-    res.status(200).send({ msg: "Login successful" });
+     const token = jwt.sign(
+      { id: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: "1d" }
+    );
+
+    res.status(200).send({ msg: "Login successful" ,token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+      },
+    },);
 
   } catch (err) {
     res.status(500).send({ msg: "Error", error: err.message });

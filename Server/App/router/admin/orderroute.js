@@ -1,25 +1,13 @@
 const express = require("express");
+const OrderRoutes = express.Router();
+
+const authMiddleware = require("../../Middleware/middle");
 const {
-  Orderget,
-  CreateOrder,
-  DeleteOrder,
-  getSummary,
-  OrderEdit,
-  getSingleOrder,
+  placeOrder,
+  getUserOrders,
 } = require("../../controller/admin/addordercontroller");
 
-const OrderRoute = express.Router();
+OrderRoutes.post("/place-order", authMiddleware, placeOrder);
+OrderRoutes.get("/my-orders", authMiddleware, getUserOrders);
 
-OrderRoute.get("/", Orderget);
-
-OrderRoute.post("/create", CreateOrder);
-
-OrderRoute.delete("/delete/:id", DeleteOrder);
-
-OrderRoute.put("/Edit/:id", OrderEdit);
-
-OrderRoute.get("/summary", getSummary);
-
-OrderRoute.get("/:id", getSingleOrder);
-
-module.exports = { OrderRoute };
+module.exports = OrderRoutes;

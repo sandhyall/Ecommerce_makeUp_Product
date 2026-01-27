@@ -1,126 +1,62 @@
-const { ModelOrder } = require("../../model/ordermodel");
+const Order = require("../../model/ordermodel")
+const Cart = require("../../model/addcartmodel")
 
-
-const Orderget = async (req, res) => {
+const placeOrder = async (req, res) => {
   try {
-    const orders = await ModelOrder.find().sort({ createdAt: -1 });
-    res.status(200).json({
-      status: true,
-      message: "Orders fetched successfully",
-      data: orders
-    });
-  } catch (error) {
-    res.status(500).json({
-      status: false,
-      message: "Failed to fetch orders"
-    });
-  }
-};
+    const userId = req.user.id;
 
+    const cartItems = await Cart.find({ userId }).populate("productId");
 
-const CreateOrder = async (req, res) => {
-  try {
-    const {orderid,customer, total, status } = req.body;
-
-    const newOrder = new ModelOrder({
-      orderid,
-      customer,
-      total,
-      status
-    });
-
-    await newOrder.save();
-
-    res.status(201).json({
-      status: true,
-      message: "Order created successfully",
-      data: newOrder
-    });
-  } catch (error) {
-    res.status(400).json({
-      status: false,
-      message: "Order creation failed"
-    });
-  }
-};
-
-
-const DeleteOrder = async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    await ModelOrder.findByIdAndDelete(id);
-
-    res.status(200).json({
-      status: true,
-      message: "Order deleted successfully"
-    });
-  } catch (error) {
-    res.status(400).json({
-      status: false,
-      message: "Failed to delete order"
-    });
-  }
-};
-
-const OrderEdit = async (req, res) => {
-  const updateData = {
-    orderid: req.body.orderid,
-    customer:req.body.customer,
-    total:req.body.total,
-    status:req.body.status
-  };
- const updated = await ModelOrder.findByIdAndUpdate(
-    req.params.id,
-    updateData,
-    { new: true }
-  );
-
-  res.send({ status: "success", data: updated });
-};
-
-
-
-
-const getSummary = async (req, res) => {
-  try {
-    const totalOrders = await ModelOrder.countDocuments();
-    const completed = await ModelOrder.countDocuments({ status: "Complete" });
-    const pending = await ModelOrder.countDocuments({ status: "Pending" });
-    const cancelled = await ModelOrder.countDocuments({ status: "Cancelled" });
-
-    res.status(200).json({
-      totalOrders,
-      completed,
-      pending,
-      cancelled
-    });
-  } catch (error) {
-    res.status(500).json({
-      message: "Summary fetch failed"
-    });
-  }
-};
-
-const getSingleOrder = async (req, res) => {
-  try {
-    const order = await ModelOrder.findById(req.params.id);
-
-    if (!order) {
-      return res.status(404).json({ msg: "Order not found" });
+    if (!cartItems.length) {
+      return res.status(400).json({ success: false, message: "Cart is empty" });
     }
 
-    res.status(200).json(order);
-  } catch (error) {
-    res.status(500).json({ msg: "Server error" });
+    const items = cartItems.map(item => ({
+      productId: item.productId._id,
+      quantity: item.quantity,
+    }));
+
+    const totalPrice = cartItems.reduce(
+      (sum, item) => sum + item.quantity * item.productId.price,
+      0
+    );
+
+    const order = await Order.create({
+      userId,
+      items,
+      totalPrice,
+    });
+
+    await Cart.deleteMany({ userId });
+
+    res.status(201).json({ success: true, order });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
   }
+};
+
+const getUserOrders = async (req, res) => {
+  try {
+    const orders = await Order.find({ userId: req.user.id })
+      .populate("items.productId")
+      .sort({ createdAt: -1 });
+
+    res.json({ success: true, orders });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+const getAllOrders = async (req, res) => {
+  const orders = await Order.find()
+    .populate("userId", "name email")
+    .populate("items.productId");
+
+  res.json({ success: true, orders });
 };
 
 module.exports = {
-  Orderget,
-  CreateOrder,
-  DeleteOrder,
-  OrderEdit,
-  getSummary,
-  getSingleOrder
+  placeOrder,
+  getUserOrders,
+  getAllOrders
 };
