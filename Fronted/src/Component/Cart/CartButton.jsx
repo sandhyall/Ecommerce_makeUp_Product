@@ -6,9 +6,9 @@ const CartButton = () => {
   const [cartItems, setCartItems] = useState([]);
   const navigate = useNavigate();
   const serverUrl = import.meta.env.VITE_SERVER;
-  const cartApiUrl = import.meta.env.VITE_APIs; // use your cart backend env
+  const cartApiUrl = import.meta.env.VITE_APIs; 
 
-  // Fetch cart items
+  
   const fetchCart = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -31,14 +31,14 @@ const CartButton = () => {
     }
   };
 
-  // Fetch on mount
+  
   useEffect(() => {
     fetchCart();
   }, []);
 
   // Calculate total
   const total = cartItems.reduce((acc, item) => {
-    if (!item.productId) return acc; // ignore invalid items
+    if (!item.productId) return acc; 
     return acc + item.productId.price * item.quantity;
   }, 0);
 

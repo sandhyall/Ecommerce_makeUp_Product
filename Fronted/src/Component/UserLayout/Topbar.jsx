@@ -1,11 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import Search from "../Common/Search";
-import { FaBagShopping } from "react-icons/fa6";
+import { FaBagShopping, FaMagnifyingGlass } from "react-icons/fa6";
 
 const Topbar = () => {
+  const [showSearch, setShowSearch] = useState(false);
+
   return (
-    <header className="w-full bg-white border-b border-gray-200 ">
+    <header className="w-full bg-white border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-5 py-4 flex items-center justify-between">
         <h1 className="text-2xl font-bold text-pink-600 capitalize">Sandhya</h1>
 
@@ -37,8 +39,18 @@ const Topbar = () => {
             </Link>
           </div>
 
-          <div className="flex items-center gap-4">
-            <Search />
+          <div className="flex items-center gap-4 relative">
+            {/* Search icon toggles the search bar */}
+            <button
+              onClick={() => setShowSearch(!showSearch)}
+              className="text-pink-600 hover:text-black transition text-xl"
+            >
+               <FaMagnifyingGlass />
+            </button>
+
+            {/* Show Search bar only if toggled */}
+            {showSearch && <Search />}
+
             <Link to="/cart">
               <FaBagShopping className="text-xl text-pink-600 cursor-pointer hover:text-black transition" />
             </Link>

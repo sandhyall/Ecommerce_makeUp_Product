@@ -13,6 +13,7 @@ import Login from "./Pages/Login";
 import Register from "./Pages/Register";
 import ProductDetails from "./Pages/ProductDetails";
 
+
 /* ADMIN */
 import Adminlogin from "./Pages/Adminlogin";
 import AdminLayout from "./Component/Admin/AdminLayout";
@@ -20,9 +21,11 @@ import DashboardOverviw from "./Component/Admin/DashboardOverviw";
 import PrivateRoute from "./Component/PrivateRoute/PrivateRoute";
 import DashboardProduct from "./Component/Admin/DashboardProduct";
 import DashbordOrder from "./Component/Admin/DashbordOrder";
-import View from "./Component/Admin/View";
+
 import ThankYou from "./Component/Common/Thankyou";
 import MyOrders from "./Component/Cart/MyOrders";
+import ViewPage from "./Component/Cart/ViewPage";
+import SearchResult from "./Component/Common/Search";
 
 const App = () => {
   return (
@@ -31,16 +34,18 @@ const App = () => {
         {/* USER */}
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
-          <Route path="collection/:collection"element={<Collectionpage />} />
-          <Route path="product/:id" element={<ProductDetails />} /> {/* matches link */}
+          <Route path="collection/:collection" element={<Collectionpage />} />
+          <Route path="product/:id" element={<ProductDetails />} />{" "}
+          {/* matches link */}
           <Route path="contactus" element={<Contactus />} />
           <Route path="blog" element={<Blogs />} />
           <Route path="cart" element={<CartButton />} />
           <Route path="checkout" element={<Checkout />} />
-           <Route path="/thank-you" element={<ThankYou/>} />
-            <Route path="/my-orders" element={<MyOrders/>} />
+          <Route path="/thank-you" element={<ThankYou />} />
+          <Route path="/my-orders" element={<MyOrders />} />
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
+           <Route path="/search" element={<SearchResult/>} />
         </Route>
 
         {/* ADMIN LOGIN */}
@@ -59,7 +64,8 @@ const App = () => {
           <Route path="overview" element={<DashboardOverviw />} />
           <Route path="product" element={<DashboardProduct />} />
           <Route path="orders" element={<DashbordOrder />} />
-          <Route path="orders/view/:id" element={<View />} />
+
+           <Route path="orders/view/:id" element={<ViewPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

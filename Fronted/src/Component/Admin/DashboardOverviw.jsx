@@ -3,6 +3,10 @@ import { FaBagShopping } from "react-icons/fa6";
 import { CiDollar } from "react-icons/ci";
 import { FaRegUser } from "react-icons/fa";
 
+import SalesChart from "../Chart/SalesChart";
+import OrdersChart from "../Chart/OrderStatus";
+import TopProductsChart from "../Chart/TopProductsChart";
+
 const DashboardOverview = () => {
   return (
     <div className="p-4">
@@ -50,6 +54,15 @@ const DashboardOverview = () => {
           </div>
         </div>
       </div>
+       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <SalesChart/>
+      <OrdersChart/>
+       </div>
+      
+       <div className="mt-6">
+        <TopProductsChart/>
+       </div>
+     
       
     </div>
   );
