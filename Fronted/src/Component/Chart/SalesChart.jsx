@@ -1,63 +1,57 @@
 import React, { useEffect, useState } from "react";
 import ReactECharts from "echarts-for-react";
 import axios from "axios";
-const ServerUrles = import.meta.env.VITE_SERVER;
+
+const ServerUrles = import.meta.env.VITE_SERVER; 
 
 const SalesChart = () => {
   const [timeframe, setTimeframe] = useState("month");
   const [labels, setLabels] = useState([]);
-  const [values, setValues] = useState([]);
-  const [growth, setGrowth] = useState(0);
+  const [revenue, setRevenue] = useState([]);
+  const [soldQty, setSoldQty] = useState([]);
 
-  const fetchSales = async () => {
+  const fetchData = async () => {
     try {
       const res = await axios.get(`${ServerUrles}/chart/sold?type=${timeframe}`);
       const data = res.data;
 
-      const dataLabels = data.map((d) => d.label);
-      const dataValues = data.map((d) => d.value);
-
-      const last = dataValues[dataValues.length - 1];
-      const prev = dataValues[dataValues.length - 2] || last;
-      const percent = (((last - prev) / prev) * 100).toFixed(1);
-
-      setLabels(dataLabels);
-      setValues(dataValues);
-      setGrowth(percent);
+      setLabels(data.map(d => d.label));
+      setRevenue(data.map(d => d.revenue));
+      setSoldQty(data.map(d => d.soldQty));
     } catch (err) {
       console.error(err);
     }
   };
 
   useEffect(() => {
-    fetchSales();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchData();
   }, [timeframe]);
 
   const option = {
     tooltip: { trigger: "axis" },
+    legend: { data: ["Revenue", "Sold Quantity"] },
     xAxis: { type: "category", data: labels },
-    yAxis: { type: "value" },
-    series: [
-      { name: "Sales", type: "line", smooth: true, data: values },
+    yAxis: [
+      { type: "value", name: "Revenue", position: "left" },
+      { type: "value", name: "Sold Qty", position: "right" }
     ],
+    series: [
+      { name: "Revenue", type: "line", smooth: true, data: revenue },
+      { name: "Sold Quantity", type: "bar", yAxisIndex: 1, data: soldQty }
+    ]
   };
 
   return (
     <div className="bg-white p-5 rounded-lg shadow">
       <div className="flex justify-between items-center mb-3">
-        <div>
-          <h2 className="text-xl font-semibold">Sales Revenue</h2>
-          <p className={`text-sm font-medium ${growth >= 0 ? "text-green-600" : "text-red-600"}`}>
-            {growth >= 0 ? "▲" : "▼"} {Math.abs(growth)}% from previous period
-          </p>
-        </div>
-
+        <h2 className="text-xl font-semibold">Sales Overview</h2>
         <div className="flex gap-2">
-          {["day", "month", "year"].map((t) => (
+          {["day","month","year"].map(t => (
             <button
               key={t}
               onClick={() => setTimeframe(t)}
-              className={`px-3 py-1 rounded text-sm ${timeframe === t ? "bg-teal-500 text-white" : "bg-gray-200 text-gray-700"}`}
+              className={`px-3 py-1 rounded text-sm ${timeframe===t ? "bg-teal-500 text-white":"bg-gray-200 text-gray-700"}`}
             >
               {t.toUpperCase()}
             </button>

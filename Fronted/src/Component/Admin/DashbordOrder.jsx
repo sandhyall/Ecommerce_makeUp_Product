@@ -4,7 +4,7 @@ import { FaCheck } from "react-icons/fa";
 import OrderProduct from "./OrderProduct";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import classNames from "classnames"; // install: npm i classnames
+import classNames from "classnames"; 
 
 const apiUrl = import.meta.env.VITE_SERVERs;
 
@@ -34,6 +34,7 @@ const DashboardOrder = () => {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchSummary();
   }, []);
 

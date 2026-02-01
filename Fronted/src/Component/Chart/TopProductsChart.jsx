@@ -1,35 +1,29 @@
 import React, { useEffect, useState } from "react";
 import ReactECharts from "echarts-for-react";
+import axios from "axios";
+
+const ServerUrles = import.meta.env.VITE_SERVER; 
 
 const TopProductsChart = () => {
-  const [timeframe, setTimeframe] = useState("month");
   const [products, setProducts] = useState([]);
   const [insight, setInsight] = useState("");
 
-  const productNames = [
-    "Lipstick",
-    "Foundation",
-    "Mascara",
-    "Eyeliner",
-    "Face Cream",
-  ];
+  const fetchTopProducts = async () => {
+    try {
+      const res = await axios.get(`${ServerUrles}/chart/top`);
+      const data = res.data;
 
-  const generateData = () => {
-    const data = productNames.map((name) => ({
-      name,
-      value: Math.floor(Math.random() * 200) + 20,
-    }));
-
-    const sorted = data.sort((a, b) => b.value - a.value);
-
-    setProducts(sorted);
-
-    setInsight(`${sorted[0].name} is best seller`);
+      setProducts(data);
+      if (data.length > 0) setInsight(`${data[0].name} is best seller`);
+    } catch (err) {
+      console.error("Error fetching top products:", err);
+    }
   };
 
   useEffect(() => {
-    generateData();
-  }, [timeframe]);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchTopProducts();
+  }, []);
 
   const option = {
     tooltip: { trigger: "axis" },
@@ -52,28 +46,11 @@ const TopProductsChart = () => {
       <div className="flex justify-between items-center mb-3">
         <div>
           <h2 className="text-xl font-semibold">Top Products</h2>
-
           <p className="text-sm text-teal-600 font-medium">🏆 {insight}</p>
-        </div>
-
-        <div className="flex gap-2">
-          {["day", "month", "year"].map((t) => (
-            <button
-              key={t}
-              onClick={() => setTimeframe(t)}
-              className={`px-3 py-1 rounded text-sm ${
-                timeframe === t
-                  ? "bg-teal-500 text-white"
-                  : "bg-gray-200 text-gray-700"
-              }`}
-            >
-              {t.toUpperCase()}
-            </button>
-          ))}
         </div>
       </div>
 
-      <ReactECharts option={option}  />
+      <ReactECharts option={option} />
     </div>
   );
 };

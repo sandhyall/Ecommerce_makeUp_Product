@@ -36,7 +36,7 @@ const App = () => {
           <Route index element={<Home />} />
           <Route path="collection/:collection" element={<Collectionpage />} />
           <Route path="product/:id" element={<ProductDetails />} />{" "}
-          {/* matches link */}
+       
           <Route path="contactus" element={<Contactus />} />
           <Route path="blog" element={<Blogs />} />
           <Route path="cart" element={<CartButton />} />

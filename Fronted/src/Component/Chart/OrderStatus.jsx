@@ -1,93 +1,74 @@
 import React, { useEffect, useState } from "react";
 import ReactECharts from "echarts-for-react";
+import axios from "axios";
+
+const ServerUrles = import.meta.env.VITE_SERVER; 
 
 const OrdersChart = () => {
-  const [timeframe, setTimeframe] = useState("month");
+  const [timeframe, setTimeframe] = useState("month"); 
   const [labels, setLabels] = useState([]);
   const [values, setValues] = useState([]);
-  const [insight, setInsight] = useState(0);
+  const [growth, setGrowth] = useState(0);
 
-  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-  const months = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
-  const years = ["2024", "2025", "2026"];
+  
+  const fetchOrders = async () => {
+    try {
+      const res = await axios.get(`${ServerUrles}/chart/sold?type=${timeframe}`);
+      const data = Array.isArray(res.data) ? res.data : [];
 
-  const generateData = () => {
-    let dataLabels = [];
-    let dataValues = [];
+      
+      const dataLabels = data.map((d) => d.label);
+      const dataValues = data.map((d) => d.soldQty || 0);
 
-    if (timeframe === "day") {
-      dataLabels = days;
-      dataValues = days.map(() => Math.floor(Math.random() * 40));
+     
+      const last = dataValues[dataValues.length - 1] || 0;
+      const prev = dataValues[dataValues.length - 2] || last || 1; 
+      const percent = (((last - prev) / prev) * 100).toFixed(1);
+
+      setLabels(dataLabels);
+      setValues(dataValues);
+      setGrowth(percent);
+    } catch (err) {
+      console.error("Error fetching orders:", err);
+      setLabels([]);
+      setValues([]);
+      setGrowth(0);
     }
-
-    if (timeframe === "month") {
-      dataLabels = months;
-      dataValues = months.map(() => Math.floor(Math.random() * 400));
-    }
-
-    if (timeframe === "year") {
-      dataLabels = years;
-      dataValues = years.map(() => Math.floor(Math.random() * 4000));
-    }
-
-    const last = dataValues[dataValues.length - 1];
-    const prev = dataValues[dataValues.length - 2] || last;
-    const percent = (((last - prev) / prev) * 100).toFixed(1);
-
-    setLabels(dataLabels);
-    setValues(dataValues);
-    setInsight(percent);
   };
 
   useEffect(() => {
-    generateData();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchOrders();
   }, [timeframe]);
 
+  
   const option = {
     tooltip: { trigger: "axis" },
-    xAxis: {
-      type: "category",
-      data: labels,
-    },
-    yAxis: {
-      type: "value",
-    },
+    xAxis: { type: "category", data: labels },
+    yAxis: { type: "value" },
     series: [
       {
         name: "Orders",
         type: "bar",
         data: values,
+        itemStyle: {
+          color: "#14B8A6", 
+        },
       },
     ],
   };
 
   return (
     <div className="bg-white p-5 rounded-lg shadow">
-   
       <div className="flex justify-between items-center mb-3">
         <div>
           <h2 className="text-xl font-semibold">Orders Overview</h2>
-
-        
           <p
             className={`text-sm font-medium ${
-              insight >= 0 ? "text-green-600" : "text-red-600"
+              growth >= 0 ? "text-green-600" : "text-red-600"
             }`}
           >
-            {insight >= 0 ? "▲" : "▼"} {Math.abs(insight)}% from previous period
+            {growth >= 0 ? "▲" : "▼"} {Math.abs(growth)}% from previous period
           </p>
         </div>
 
@@ -108,7 +89,7 @@ const OrdersChart = () => {
         </div>
       </div>
 
-      <ReactECharts option={option}  />
+      <ReactECharts option={option} />
     </div>
   );
 };
