@@ -11,7 +11,7 @@ const AddproductInsert = async (req, res) => {
       price,
       category,
       isNewArrival: true,
-     image: req.file ? req.file.filename : null,
+      image: req.file ? req.file.filename : null,
     });
 
     await product.save();
@@ -54,7 +54,7 @@ const AddproductEdit = async (req, res) => {
       description: req.body.description,
       price: req.body.price,
       category: req.body.category,
-      isNewArrival: req.body.isNewArrival 
+      isNewArrival: req.body.isNewArrival,
     };
 
     if (req.file) updateData.image = req.file.filename;
@@ -62,7 +62,7 @@ const AddproductEdit = async (req, res) => {
     const updatedProduct = await AddproductModel.findByIdAndUpdate(
       req.params.id,
       updateData,
-      { new: true }
+      { new: true },
     );
 
     res.json({
@@ -100,31 +100,41 @@ const ArrivalProduct = async (req, res) => {
 
     res.status(200).json({ data: arrivalProducts });
   } catch (err) {
-    console.error("ArrivalProduct error:", err); 
+    console.error("ArrivalProduct error:", err);
     res.status(500).json({ msg: "Server error" });
   }
 };
 
 const Featureproduct = async (req, res) => {
   try {
-   
-
-    const FeatureProducts = await AddproductModel.find({
-     
-      
-    }).sort({ createdAt: -1 })
-    .limit(10); 
-    ;
-
+    const FeatureProducts = await AddproductModel.find({})
+      .sort({ createdAt: -1 })
+      .limit(10);
     res.status(200).json({ data: FeatureProducts });
   } catch (err) {
-    console.error("featureProduct error:", err); 
+    console.error("featureProduct error:", err);
     res.status(500).json({ msg: "Server error" });
   }
 };
 
+const Addproductfailter = async (req, res) => {
+  try {
+    console.log("Incoming filter query:", req.query); // Logs the filters for debugging
+    const { category, brand, color } = req.query;
 
+    const filter = {};
+    if (category) filter.category = category;
+    if (brand) filter.brand = brand;
+    if (color) filter.color = color;
 
+    const products = await AddproductModel.find(filter).sort({ createdAt: -1 });
+
+    res.status(200).json({ status: "success", data: products });
+  } catch (err) {
+    console.error("Filter route error:", err); // Logs exact backend error
+    res.status(500).json({ status: "error", msg: err.message });
+  }
+};
 
 module.exports = {
   AddproductInsert,
@@ -133,6 +143,6 @@ module.exports = {
   AddproductEdit,
   getSingleProduct,
   ArrivalProduct,
-  Featureproduct
- 
+  Featureproduct,
+  Addproductfailter,
 };

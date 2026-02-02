@@ -1,24 +1,39 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import FiltersideBar from "../Component/Product/FiltersideBar";
 import SortFilter from "../Component/Product/SortFilter";
 
 const Collectionpage = () => {
   const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(false);
+
   const apiUrl = import.meta.env.VITE_API;
+  const serverUrl = import.meta.env.VITE_SERVER;
+
+  const [searchParams] = useSearchParams(); 
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await axios.get(`${apiUrl}/product-get`);
-        setProducts(res.data.data || res.data); 
+        setLoading(true);
+
+        const query = searchParams.toString(); 
+        const url = query
+          ? `${apiUrl}/filter?${query}`   
+          : `${apiUrl}/product-get`;      
+
+        const res = await axios.get(url);
+        setProducts(res.data.data || []);
       } catch (err) {
         console.error("Failed to fetch products", err);
+      } finally {
+        setLoading(false);
       }
     };
+
     fetchProducts();
-  }, [apiUrl]);
+  }, [apiUrl, searchParams]); 
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
@@ -27,6 +42,7 @@ const Collectionpage = () => {
       </h1>
 
       <div className="flex flex-col lg:flex-row gap-6">
+       
         <div className="w-full lg:w-1/4">
           <FiltersideBar />
           <div className="mt-6 lg:mt-0">
@@ -35,7 +51,11 @@ const Collectionpage = () => {
         </div>
 
         <div className="w-full lg:w-3/4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
-          {products.length === 0 ? (
+          {loading ? (
+            <p className="text-center col-span-full py-10">
+              Loading products...
+            </p>
+          ) : products.length === 0 ? (
             <p className="text-center col-span-full text-gray-500 py-10">
               No products found
             </p>
@@ -47,7 +67,7 @@ const Collectionpage = () => {
               >
                 <Link to={`/product/${item._id}`}>
                   <img
-                    src={`${import.meta.env.VITE_SERVER}/upload/${item.image}`}
+                    src={`${serverUrl}/upload/${item.image}`}
                     alt={item.name}
                     className="w-full aspect-square object-cover rounded-md mb-3"
                   />
@@ -56,8 +76,12 @@ const Collectionpage = () => {
                 <h2 className="font-medium text-base text-gray-900 leading-tight">
                   {item.name}
                 </h2>
-                <p className="text-xs text-gray-500">Brand: {item.brand || "-"}</p>
-                <p className="text-xs text-gray-500">Category: {item.category}</p>
+                <p className="text-xs text-gray-500">
+                  Brand: {item.brand || "-"}
+                </p>
+                <p className="text-xs text-gray-500">
+                  Category: {item.category}
+                </p>
                 <p className="font-semibold text-sm text-gray-900 mt-1">
                   NPR {item.price}
                 </p>

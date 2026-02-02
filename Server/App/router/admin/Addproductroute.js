@@ -7,6 +7,7 @@ const {
   getSingleProduct,
   ArrivalProduct,
   Featureproduct,
+  Addproductfailter,
 } = require("../../controller/admin/addproductcontroller");
 
 const upload = require("../../Middleware/multer");
@@ -18,9 +19,12 @@ Router.get("/product-get", Addproductlists);
 
 Router.get("/arrival", ArrivalProduct);
 Router.get("/feature", Featureproduct);
+Router.get("/filter",Addproductfailter)
 Router.get("/:id", getSingleProduct);
 
 Router.delete("/delete-product/:id", Addproductdelete);
 Router.put("/product-edit/:id", upload.single("image"), AddproductEdit);
+
+
 
 module.exports = Router;
