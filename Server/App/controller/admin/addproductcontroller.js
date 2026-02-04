@@ -1,16 +1,20 @@
+const mongoose = require("mongoose");
 const AddproductModel = require("../../model/addproduct");
 
-// ADD PRODUCT
+
 const AddproductInsert = async (req, res) => {
   try {
-    const { name, description, price, category, isNewArrival } = req.body;
+    const { name, description, price, category, brand, color, isNewArrival, isFeatured } = req.body;
 
     const product = new AddproductModel({
       name,
       description,
       price,
       category,
-      isNewArrival: true,
+      brand: brand || "-",
+      color: color || "N/A",
+      isNewArrival: isNewArrival ?? true,
+      isFeatured: isFeatured ?? false,
       image: req.file ? req.file.filename : null,
     });
 
@@ -22,31 +26,35 @@ const AddproductInsert = async (req, res) => {
       data: product,
     });
   } catch (err) {
+    console.error("AddproductInsert error:", err);
     res.status(500).json({ status: "error", msg: err.message });
   }
 };
 
-// GET ALL PRODUCTS
+
 const Addproductlists = async (req, res) => {
   try {
     const products = await AddproductModel.find().sort({ createdAt: -1 });
     res.status(200).json({ status: "success", data: products });
   } catch (err) {
+    console.error("Addproductlists error:", err);
     res.status(500).json({ status: "error", msg: err.message });
   }
 };
 
-// DELETE PRODUCT
-const Addproductdelete = async (req, res) => {
+
+const getSingleProduct = async (req, res) => {
   try {
-    await AddproductModel.findByIdAndDelete(req.params.id);
-    res.json({ status: "success", msg: "Product deleted successfully" });
+    const product = await AddproductModel.findById(req.params.id);
+    if (!product) return res.status(404).json({ status: "error", msg: "Product not found" });
+    res.status(200).json({ status: "success", data: product });
   } catch (err) {
-    res.status(500).json({ status: "error", msg: err.message });
+    console.error("getSingleProduct error:", err);
+    res.status(500).json({ status: "error", msg: "Server error" });
   }
 };
 
-// UPDATE PRODUCT
+
 const AddproductEdit = async (req, res) => {
   try {
     const updateData = {
@@ -54,7 +62,10 @@ const AddproductEdit = async (req, res) => {
       description: req.body.description,
       price: req.body.price,
       category: req.body.category,
+      brand: req.body.brand,
+      color: req.body.color,
       isNewArrival: req.body.isNewArrival,
+      isFeatured: req.body.isFeatured,
     };
 
     if (req.file) updateData.image = req.file.filename;
@@ -62,31 +73,36 @@ const AddproductEdit = async (req, res) => {
     const updatedProduct = await AddproductModel.findByIdAndUpdate(
       req.params.id,
       updateData,
-      { new: true },
+      { new: true }
     );
 
-    res.json({
+    if (!updatedProduct) return res.status(404).json({ status: "error", msg: "Product not found" });
+
+    res.status(200).json({
       status: "success",
       msg: "Product updated successfully",
       data: updatedProduct,
     });
   } catch (err) {
+    console.error("AddproductEdit error:", err);
     res.status(500).json({ status: "error", msg: err.message });
   }
 };
 
-// GET SINGLE PRODUCT
-const getSingleProduct = async (req, res) => {
+
+const Addproductdelete = async (req, res) => {
   try {
-    const product = await AddproductModel.findById(req.params.id);
-    if (!product) return res.status(404).json({ msg: "Product not found" });
-    res.status(200).json({ status: "success", data: product });
+    const deletedProduct = await AddproductModel.findByIdAndDelete(req.params.id);
+    if (!deletedProduct) return res.status(404).json({ status: "error", msg: "Product not found" });
+
+    res.json({ status: "success", msg: "Product deleted successfully" });
   } catch (err) {
-    res.status(500).json({ msg: "Server error" });
+    console.error("Addproductdelete error:", err);
+    res.status(500).json({ status: "error", msg: err.message });
   }
 };
 
-// GET NEW ARRIVALS
+
 const ArrivalProduct = async (req, res) => {
   try {
     const today = new Date();
@@ -98,40 +114,51 @@ const ArrivalProduct = async (req, res) => {
       createdAt: { $gte: thirtyDaysAgo },
     }).sort({ createdAt: -1 });
 
-    res.status(200).json({ data: arrivalProducts });
+    res.status(200).json({ status: "success", data: arrivalProducts });
   } catch (err) {
     console.error("ArrivalProduct error:", err);
-    res.status(500).json({ msg: "Server error" });
+    res.status(500).json({ status: "error", msg: "Server error" });
   }
 };
+
 
 const Featureproduct = async (req, res) => {
   try {
-    const FeatureProducts = await AddproductModel.find({})
+    const featureProducts = await AddproductModel.find({ isFeatured: true })
       .sort({ createdAt: -1 })
       .limit(10);
-    res.status(200).json({ data: FeatureProducts });
+
+    res.status(200).json({ status: "success", data: featureProducts });
   } catch (err) {
-    console.error("featureProduct error:", err);
-    res.status(500).json({ msg: "Server error" });
+    console.error("Featureproduct error:", err);
+    res.status(500).json({ status: "error", msg: "Server error" });
   }
 };
 
-const Addproductfailter = async (req, res) => {
+
+const FilterAndSortProducts = async (req, res) => {
   try {
-    console.log("Incoming filter query:", req.query); // Logs the filters for debugging
-    const { category, brand, color } = req.query;
+    const { category, brand, color, sort } = req.query;
 
     const filter = {};
-    if (category) filter.category = category;
-    if (brand) filter.brand = brand;
-    if (color) filter.color = color;
+    if (category) filter.category = new RegExp(category, "i");
+    if (brand) filter.brand = new RegExp(brand, "i");
+    if (color) filter.color = new RegExp(color, "i");
 
-    const products = await AddproductModel.find(filter).sort({ createdAt: -1 });
+    let sortOption = {};
+    switch (sort) {
+      case "priceAsc": sortOption = { price: 1 }; break;
+      case "priceDesc": sortOption = { price: -1 }; break;
+      case "popularityAsc": sortOption = { popularity: 1 }; break;
+      case "popularityDesc": sortOption = { popularity: -1 }; break;
+      default: sortOption = { createdAt: -1 };
+    }
+
+    const products = await AddproductModel.find(filter).sort(sortOption);
 
     res.status(200).json({ status: "success", data: products });
   } catch (err) {
-    console.error("Filter route error:", err); // Logs exact backend error
+    console.error("FilterAndSortProducts error:", err);
     res.status(500).json({ status: "error", msg: err.message });
   }
 };
@@ -144,5 +171,5 @@ module.exports = {
   getSingleProduct,
   ArrivalProduct,
   Featureproduct,
-  Addproductfailter,
+  FilterAndSortProducts,
 };

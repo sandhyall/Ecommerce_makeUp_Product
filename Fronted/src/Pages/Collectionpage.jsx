@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { Link, useSearchParams } from "react-router-dom";
 import FiltersideBar from "../Component/Product/FiltersideBar";
@@ -11,29 +11,52 @@ const Collectionpage = () => {
   const apiUrl = import.meta.env.VITE_API;
   const serverUrl = import.meta.env.VITE_SERVER;
 
-  const [searchParams] = useSearchParams(); 
+  const [searchParams] = useSearchParams();
 
+  
+  const fetchProducts = useCallback(async () => {
+    try {
+      setLoading(true);
+
+      const query = searchParams.toString();
+      const url = query
+        ? `${apiUrl}/filter?${query}`
+        : `${apiUrl}/product-get`;
+
+      const res = await axios.get(url);
+      setProducts(res.data.data || []);
+    } catch (err) {
+      console.error("Failed to fetch products", err);
+      setProducts([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [apiUrl, searchParams]);
+
+  
+  const fetchSortedProducts = async (sortOption) => {
+    try {
+      setLoading(true);
+
+      const query = searchParams.toString();
+      const url = query
+        ? `${apiUrl}/filter?${query}&sort=${sortOption}`
+        : `${apiUrl}/sort?sort=${sortOption}`;
+
+      const res = await axios.get(url);
+      setProducts(res.data.data || []);
+    } catch (err) {
+      console.error("Failed to fetch sorted products", err);
+      setProducts([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+ 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        setLoading(true);
-
-        const query = searchParams.toString(); 
-        const url = query
-          ? `${apiUrl}/filter?${query}`   
-          : `${apiUrl}/product-get`;      
-
-        const res = await axios.get(url);
-        setProducts(res.data.data || []);
-      } catch (err) {
-        console.error("Failed to fetch products", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchProducts();
-  }, [apiUrl, searchParams]); 
+  }, [fetchProducts]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
@@ -44,12 +67,13 @@ const Collectionpage = () => {
       <div className="flex flex-col lg:flex-row gap-6">
        
         <div className="w-full lg:w-1/4">
-          <FiltersideBar />
+          <FiltersideBar fetchProducts={fetchProducts} />
           <div className="mt-6 lg:mt-0">
-            <SortFilter />
+            <SortFilter fetchSortedProducts={fetchSortedProducts} />
           </div>
         </div>
 
+       
         <div className="w-full lg:w-3/4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
           {loading ? (
             <p className="text-center col-span-full py-10">
@@ -67,7 +91,11 @@ const Collectionpage = () => {
               >
                 <Link to={`/product/${item._id}`}>
                   <img
-                    src={`${serverUrl}/upload/${item.image}`}
+                    src={
+                      item.image
+                        ? `${serverUrl}/upload/${item.image}`
+                        : "/placeholder.png"
+                    }
                     alt={item.name}
                     className="w-full aspect-square object-cover rounded-md mb-3"
                   />
@@ -79,9 +107,7 @@ const Collectionpage = () => {
                 <p className="text-xs text-gray-500">
                   Brand: {item.brand || "-"}
                 </p>
-                <p className="text-xs text-gray-500">
-                  Category: {item.category}
-                </p>
+                <p className="text-xs text-gray-500">Category: {item.category}</p>
                 <p className="font-semibold text-sm text-gray-900 mt-1">
                   NPR {item.price}
                 </p>

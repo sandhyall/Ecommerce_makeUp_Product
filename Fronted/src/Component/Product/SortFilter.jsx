@@ -1,7 +1,7 @@
 import React from 'react'
 import { useSearchParams } from 'react-router-dom'
 
-const SortFilter = () => {
+const SortFilter = ({ onSortChange }) => {
   const [searchParams, setSearchParams] = useSearchParams()
 
   const handleChange = (e) => {
@@ -15,6 +15,11 @@ const SortFilter = () => {
     }
 
     setSearchParams(params)
+
+   
+    if (onSortChange) {
+      onSortChange(value)
+    }
   }
 
   return (
@@ -23,11 +28,13 @@ const SortFilter = () => {
         id="sort"
         value={searchParams.get('sort') || 'default'}
         onChange={handleChange}
+        className="border rounded px-2 py-1"
       >
         <option value="default">Default</option>
         <option value="priceAsc">Price: Low to High</option>
         <option value="priceDesc">Price: High to Low</option>
-        <option value="popularity">Popularity</option>
+        <option value="popularityAsc">Popularity: Low to High</option>
+        <option value="popularityDesc">Popularity: High to Low</option>
       </select>
     </div>
   )
