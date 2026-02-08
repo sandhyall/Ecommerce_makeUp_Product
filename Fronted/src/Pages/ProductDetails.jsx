@@ -16,22 +16,19 @@ const ProductDetails = () => {
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);
 
-  const apiUrl = import.meta.env.VITE_API;      
-  const cartApiUrl = import.meta.env.VITE_APIs; 
+  const apiUrl = import.meta.env.VITE_API;
+  const cartApiUrl = import.meta.env.VITE_APIs;
   const serverUrl = import.meta.env.VITE_SERVER;
 
-  // Fetch product details
   useEffect(() => {
     const fetchProduct = async () => {
       try {
         const res = await axios.get(`${apiUrl}/${id}`);
         const fetchedProduct = res.data.data || res.data;
 
-      
         fetchedProduct._id = fetchedProduct._id || fetchedProduct.id;
 
         setProduct(fetchedProduct);
-       
       } catch (err) {
         console.error("Failed to fetch product:", err);
       }
@@ -39,8 +36,8 @@ const ProductDetails = () => {
     fetchProduct();
   }, [id]);
 
-  if (!product) return <p className="text-center py-10 text-gray-500">Loading...</p>;
-
+  if (!product)
+    return <p className="text-center py-10 text-gray-500">Loading...</p>;
 
   const handleAddToCart = async () => {
     const token = localStorage.getItem("token");
@@ -50,7 +47,6 @@ const ProductDetails = () => {
       return;
     }
 
-   
     if (!product._id) {
       alert("Product ID missing, cannot add to cart!");
       return;
@@ -62,7 +58,7 @@ const ProductDetails = () => {
       const res = await axios.post(
         `${cartApiUrl}/add`,
         { productId: product._id, quantity: counter.count },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
       );
 
       if (res.data.success) {
@@ -84,7 +80,6 @@ const ProductDetails = () => {
   return (
     <div className="max-w-4xl mx-auto px-4 py-10">
       <div className="flex flex-col lg:flex-row gap-8">
-        {/* Product Image */}
         <div className="lg:w-1/2 w-full">
           <img
             src={`${serverUrl}/upload/${product.image}`}
@@ -93,7 +88,6 @@ const ProductDetails = () => {
           />
         </div>
 
-      
         <div className="lg:w-1/2 w-full flex flex-col justify-start">
           <h1 className="text-3xl font-bold mb-4">{product.name}</h1>
           <p className="text-gray-600 mb-1">Brand: {product.brand || "-"}</p>
@@ -103,14 +97,24 @@ const ProductDetails = () => {
           <h2 className="text-lg font-semibold mb-2">Description</h2>
           <p className="text-gray-700 mb-4">{product.description}</p>
 
-         
           <div className="flex items-center gap-4 my-4">
-            <button onClick={counter.decrement} className="px-3 py-1 bg-pink-300 rounded">-</button>
-            <span className="text-lg font-semibold text-pink-800">{counter.count}</span>
-            <button onClick={counter.increment} className="px-3 py-1 bg-pink-300 rounded">+</button>
+            <button
+              onClick={counter.decrement}
+              className="px-3 py-1 bg-pink-300 rounded"
+            >
+              -
+            </button>
+            <span className="text-lg font-semibold text-pink-800">
+              {counter.count}
+            </span>
+            <button
+              onClick={counter.increment}
+              className="px-3 py-1 bg-pink-300 rounded"
+            >
+              +
+            </button>
           </div>
 
-        
           <button
             onClick={handleAddToCart}
             className="bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700"

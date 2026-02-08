@@ -12,7 +12,7 @@ const NewArrival = () => {
     const fetchProducts = async () => {
       try {
         const res = await axios.get(`${apiUrl}/arrival`);
-        setProducts(res.data.data || []);
+        setProducts(res.data.data );
       } catch (err) {
         console.error("Failed to fetch products", err);
       }

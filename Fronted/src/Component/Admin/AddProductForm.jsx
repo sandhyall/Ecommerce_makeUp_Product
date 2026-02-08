@@ -21,6 +21,7 @@ const AddProductForm = ({
   // Populate form when editing
   useEffect(() => {
     if (editProduct) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFormProduct({
         name: editProduct.name,
         description: editProduct.description,
