@@ -48,7 +48,11 @@ const getSingleProduct = async (req, res) => {
       return res
         .status(404)
         .json({ status: "error", msg: "Product not found" });
-    res.status(200).json({ status: "success", data: product });
+    const similarProducts = await AddproductModel.find({
+      category: product.category,
+      _id: { $ne: product._id },
+    }).limit(4);
+    res.status(200).json({ status: "success", data: product, similarProducts });
   } catch (err) {
     console.error("getSingleProduct error:", err);
     res.status(500).json({ status: "error", msg: "Server error" });
@@ -201,7 +205,6 @@ const searchProduct = async (req, res) => {
   }
 };
 
-
 module.exports = {
   AddproductInsert,
   Addproductlists,
@@ -211,5 +214,5 @@ module.exports = {
   ArrivalProduct,
   Featureproduct,
   FilterAndSortProducts,
-  searchProduct
+  searchProduct,
 };

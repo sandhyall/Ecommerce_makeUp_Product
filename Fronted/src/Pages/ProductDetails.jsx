@@ -7,7 +7,7 @@ const useCustom = (initialValue) => {
   const [count, setCount] = useState(initialValue);
   const increment = () => setCount((prev) => prev + 1);
   const decrement = () => setCount((prev) => (prev > 1 ? prev - 1 : 1));
-  return { count, increment, decrement };
+  return { count, increment, decrement, setCount };
 };
 
 const ProductDetails = () => {
@@ -15,25 +15,29 @@ const ProductDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);
+  const [similarProducts, setSimilarProducts] = useState([]);
 
   const apiUrl = import.meta.env.VITE_API;
   const cartApiUrl = import.meta.env.VITE_APIs;
   const serverUrl = import.meta.env.VITE_SERVER;
 
+  const fetchProduct = async (productId) => {
+  try {
+    const res = await axios.get(`${apiUrl}/${productId}`);
+    const fetchedProduct = res.data.data; 
+    const similar = res.data.similarProducts || []; 
+    fetchedProduct._id = fetchedProduct._id || fetchedProduct.id;
+    setProduct(fetchedProduct);
+    setSimilarProducts(similar);
+    counter.setCount(1); 
+  } catch (err) {
+    console.error("Failed to fetch product:", err);
+  }
+};
+
   useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        const res = await axios.get(`${apiUrl}/${id}`);
-        const fetchedProduct = res.data.data || res.data;
-
-        fetchedProduct._id = fetchedProduct._id || fetchedProduct.id;
-
-        setProduct(fetchedProduct);
-      } catch (err) {
-        console.error("Failed to fetch product:", err);
-      }
-    };
-    fetchProduct();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchProduct(id);
   }, [id]);
 
   if (!product)
@@ -52,13 +56,11 @@ const ProductDetails = () => {
       return;
     }
 
-    console.log("Adding to cart:", product._id, counter.count);
-
     try {
       const res = await axios.post(
         `${cartApiUrl}/add`,
         { productId: product._id, quantity: counter.count },
-        { headers: { Authorization: `Bearer ${token}` } },
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
       if (res.data.success) {
@@ -123,6 +125,29 @@ const ProductDetails = () => {
           </button>
         </div>
       </div>
+
+      {similarProducts.length > 0 && (
+        <div className="mt-12">
+          <h2 className="text-2xl font-bold mb-4">Similar Products</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {similarProducts.map((p) => (
+              <div
+                key={p._id}
+                className="border p-3 rounded-lg shadow hover:shadow-md cursor-pointer"
+                onClick={() => fetchProduct(p._id)}
+              >
+                <img
+                  src={`${serverUrl}/upload/${p.image}`}
+                  alt={p.name}
+                  className="w-full h-40 object-cover rounded"
+                />
+                <h3 className="mt-2 font-semibold">{p.name}</h3>
+                <p className="text-pink-600 font-bold">NPR {p.price}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
