@@ -10,9 +10,10 @@ const AdminRoutes = require("./App/router/admin/adminlogin");
 const OrderRoutes = require("./App/router/admin/orderroute");
 
 const Router = require("./App/router/admin/Addproductroute");
-const SearchRoute = require("./App/router/web/searchRoutes");
+
 const { CartRoute } = require("./App/router/admin/addcartRouter");
 const ChartRoute = require("./App/router/admin/chartRouter");
+const { PageRoute } = require("./App/router/web/pageRoute");
 
 const app = express();
 
@@ -35,11 +36,11 @@ app.use("/addproduct", Router);
 
 app.use("/order", OrderRoutes);
 
-app.use("/searchproduct", SearchRoute);
-
 app.use("/cart", CartRoute);
 
 app.use("/chart", ChartRoute);
+
+app.use("/page", PageRoute);
 mongoose
   .connect(process.env.DB)
   .then(() => console.log("Connected to MongoDB"))

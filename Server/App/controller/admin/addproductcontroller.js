@@ -1,10 +1,10 @@
 const mongoose = require("mongoose");
 const AddproductModel = require("../../model/addproduct");
 
-
 const AddproductInsert = async (req, res) => {
   try {
-    const { name, description, price, category, brand, color, isNewArrival, isFeatured } = req.body;
+    const { name, description, price, category, brand, color, isNewArrival } =
+      req.body;
 
     const product = new AddproductModel({
       name,
@@ -13,8 +13,8 @@ const AddproductInsert = async (req, res) => {
       category,
       brand: brand || "-",
       color: color || "N/A",
-      isNewArrival: isNewArrival ?? true,
-      isFeatured: isFeatured ?? false,
+      isNewArrival: true,
+
       image: req.file ? req.file.filename : null,
     });
 
@@ -31,7 +31,6 @@ const AddproductInsert = async (req, res) => {
   }
 };
 
-
 const Addproductlists = async (req, res) => {
   try {
     const products = await AddproductModel.find().sort({ createdAt: -1 });
@@ -42,18 +41,19 @@ const Addproductlists = async (req, res) => {
   }
 };
 
-
 const getSingleProduct = async (req, res) => {
   try {
     const product = await AddproductModel.findById(req.params.id);
-    if (!product) return res.status(404).json({ status: "error", msg: "Product not found" });
+    if (!product)
+      return res
+        .status(404)
+        .json({ status: "error", msg: "Product not found" });
     res.status(200).json({ status: "success", data: product });
   } catch (err) {
     console.error("getSingleProduct error:", err);
     res.status(500).json({ status: "error", msg: "Server error" });
   }
 };
-
 
 const AddproductEdit = async (req, res) => {
   try {
@@ -64,8 +64,8 @@ const AddproductEdit = async (req, res) => {
       category: req.body.category,
       brand: req.body.brand,
       color: req.body.color,
+
       isNewArrival: req.body.isNewArrival,
-      isFeatured: req.body.isFeatured,
     };
 
     if (req.file) updateData.image = req.file.filename;
@@ -73,10 +73,13 @@ const AddproductEdit = async (req, res) => {
     const updatedProduct = await AddproductModel.findByIdAndUpdate(
       req.params.id,
       updateData,
-      { new: true }
+      { new: true },
     );
 
-    if (!updatedProduct) return res.status(404).json({ status: "error", msg: "Product not found" });
+    if (!updatedProduct)
+      return res
+        .status(404)
+        .json({ status: "error", msg: "Product not found" });
 
     res.status(200).json({
       status: "success",
@@ -89,11 +92,15 @@ const AddproductEdit = async (req, res) => {
   }
 };
 
-
 const Addproductdelete = async (req, res) => {
   try {
-    const deletedProduct = await AddproductModel.findByIdAndDelete(req.params.id);
-    if (!deletedProduct) return res.status(404).json({ status: "error", msg: "Product not found" });
+    const deletedProduct = await AddproductModel.findByIdAndDelete(
+      req.params.id,
+    );
+    if (!deletedProduct)
+      return res
+        .status(404)
+        .json({ status: "error", msg: "Product not found" });
 
     res.json({ status: "success", msg: "Product deleted successfully" });
   } catch (err) {
@@ -101,7 +108,6 @@ const Addproductdelete = async (req, res) => {
     res.status(500).json({ status: "error", msg: err.message });
   }
 };
-
 
 const ArrivalProduct = async (req, res) => {
   try {
@@ -121,10 +127,9 @@ const ArrivalProduct = async (req, res) => {
   }
 };
 
-
 const Featureproduct = async (req, res) => {
   try {
-    const featureProducts = await AddproductModel.find({ isFeatured: true })
+    const featureProducts = await AddproductModel.find()
       .sort({ createdAt: -1 })
       .limit(10);
 
@@ -134,7 +139,6 @@ const Featureproduct = async (req, res) => {
     res.status(500).json({ status: "error", msg: "Server error" });
   }
 };
-
 
 const FilterAndSortProducts = async (req, res) => {
   try {
@@ -147,11 +151,20 @@ const FilterAndSortProducts = async (req, res) => {
 
     let sortOption = {};
     switch (sort) {
-      case "priceAsc": sortOption = { price: 1 }; break;
-      case "priceDesc": sortOption = { price: -1 }; break;
-      case "popularityAsc": sortOption = { popularity: 1 }; break;
-      case "popularityDesc": sortOption = { popularity: -1 }; break;
-      default: sortOption = { createdAt: -1 };
+      case "priceAsc":
+        sortOption = { price: 1 };
+        break;
+      case "priceDesc":
+        sortOption = { price: -1 };
+        break;
+      case "popularityAsc":
+        sortOption = { popularity: 1 };
+        break;
+      case "popularityDesc":
+        sortOption = { popularity: -1 };
+        break;
+      default:
+        sortOption = { createdAt: -1 };
     }
 
     const products = await AddproductModel.find(filter).sort(sortOption);
@@ -162,6 +175,32 @@ const FilterAndSortProducts = async (req, res) => {
     res.status(500).json({ status: "error", msg: err.message });
   }
 };
+//search product
+const searchProduct = async (req, res) => {
+  const { search } = req.query;
+
+  try {
+    let query = {};
+
+    if (search) {
+      query = {
+        $or: [
+          { name: { $regex: search, $options: "i" } },
+          { category: { $regex: search, $options: "i" } },
+          { brand: { $regex: search, $options: "i" } },
+        ],
+      };
+    }
+
+    const products = await AddproductModel.find(query);
+
+    res.status(200).json(products);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
 
 module.exports = {
   AddproductInsert,
@@ -172,4 +211,5 @@ module.exports = {
   ArrivalProduct,
   Featureproduct,
   FilterAndSortProducts,
+  searchProduct
 };

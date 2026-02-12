@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import { IoIosAddCircle } from "react-icons/io";
+import Searchbar from "./Searchbar";
 
 const apiUrl = import.meta.env.VITE_SERVERs;
 const ServerUrl = import.meta.env.VITE_PAGE;
@@ -13,6 +14,7 @@ const OrderProduct = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [showExtra, setShowExtra] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const navigate = useNavigate();
 
@@ -103,6 +105,29 @@ const OrderProduct = () => {
       setError(err.response?.data?.message || "Failed to delete order");
     }
   };
+ const handleSearch = async (query) => {
+    try {
+      setSearchQuery(query);
+      const token = localStorage.getItem("token");
+
+      if (!query) {
+        fetchOrderspage(1);
+        return;
+      }
+
+      const res = await axios.get(`${apiUrl}/search?search=${query}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      setOrders(res.data);
+      setPage(1);
+      setTotalPages(1);
+      setError("");
+    } catch (err) {
+      setError(err.response?.data?.message || "Search failed");
+    }
+  };
+  
 
   const handlePrev = () => setPage((prev) => Math.max(prev - 1, 1));
   const handleNext = () => setPage((prev) => Math.min(prev + 1, totalPages));
@@ -115,6 +140,7 @@ const OrderProduct = () => {
       </h2>
 
       {error && <p className="text-red-500 mb-3 text-center">{error}</p>}
+      <Searchbar onSearch ={handleSearch}/>
 
       <div className="flex justify-end mb-4">
         <button

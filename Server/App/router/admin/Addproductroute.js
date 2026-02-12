@@ -8,6 +8,7 @@ const {
   ArrivalProduct,
   Featureproduct,
   FilterAndSortProducts,
+  searchProduct,
 } = require("../../controller/admin/addproductcontroller");
 
 const upload = require("../../Middleware/multer");
@@ -20,11 +21,15 @@ Router.get("/product-get", Addproductlists);
 Router.get("/arrival", ArrivalProduct);
 Router.get("/feature", Featureproduct);
 Router.get("/filter",FilterAndSortProducts)
+Router.get("/search",searchProduct)
 
-Router.get("/:id", getSingleProduct);
+
 
 Router.delete("/delete-product/:id", Addproductdelete);
 Router.put("/product-edit/:id", upload.single("image"), AddproductEdit);
+
+Router.get("/:id", getSingleProduct);
+
 
 
 

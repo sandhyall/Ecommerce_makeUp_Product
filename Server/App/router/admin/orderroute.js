@@ -13,6 +13,7 @@ const {
   orderview,
   receiveOrder,
   assignShipping,
+  Searchorder,
 } = require("../../controller/admin/addordercontroller");
 
 // User routes
@@ -34,5 +35,8 @@ OrderRoutes.put("/receive/:id", authMiddleware, receiveOrder);
 
 
 OrderRoutes.put("/assign-shipping/:id", authMiddleware, assignShipping);
+
+//order search
+OrderRoutes.get("/search",authMiddleware, Searchorder);
 
 module.exports = OrderRoutes;

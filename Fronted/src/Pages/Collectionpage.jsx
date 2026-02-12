@@ -16,28 +16,37 @@ const Collectionpage = () => {
  
 
   const [searchParams] = useSearchParams();
-  const fetchProducts = useCallback(async (pageNumber = 1, sortOption = "") => {
-    try {
-      setLoading(true);
+ const fetchProducts = useCallback(async (pageNumber = 1, sortOption = "") => {
+  try {
+    setLoading(true);
 
-      const query = searchParams.toString();
-      let url = `${apiUrl}/product-get?page=${pageNumber}&limit=10`;
-      if (query) url = `${apiUrl}/filter?${query}&page=${pageNumber}&limit=10`;
-      if (sortOption) url += `&sort=${sortOption}`;
+    const queryParams = searchParams.toString();
 
-      const res = await axios.get(url);
-      setProducts(res.data.data || res.data.products || []);
-      setPage(res.data.currentPage || pageNumber);
-      setTotalPages(res.data.totalPages || 1);
-      setError("");
-    } catch (err) {
-      console.error("Failed to fetch products", err);
-      setProducts([]);
-      setError(err.response?.data?.message || "Failed to fetch products");
-    } finally {
-      setLoading(false);
+    let url;
+
+    if (searchParams.get("search")) {
+      url = `${apiUrl}/search?${queryParams}`;
+    } else if (queryParams) {
+      url = `${apiUrl}/filter?${queryParams}`;
+    } else {
+      url = `${apiUrl}/product-get?page=${pageNumber}&limit=10`;
     }
-  }, [apiUrl, searchParams]);
+
+    if (sortOption) url += `&sort=${sortOption}`;
+
+    const res = await axios.get(url);
+
+    setProducts(res.data.data || res.data || []);
+    setError("");
+  } catch (err) {
+    console.error("Failed to fetch products", err);
+    setProducts([]);
+    setError("Failed to fetch products");
+  } finally {
+    setLoading(false);
+  }
+}, [apiUrl, searchParams]);
+
 
   useEffect(() => {
     fetchProducts(page);

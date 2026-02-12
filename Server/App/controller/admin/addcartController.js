@@ -7,26 +7,26 @@ const Cartinsert = async (req, res) => {
     const { productId, quantity } = req.body;
     const userId = req.user?.id;
 
-    // Validate input
+ 
     if (!productId || !quantity || !userId) {
-      return res.status(400).json({ success: false, message: "Missing required data" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Missing required data" });
     }
 
-    // Check if product exists
     const productExists = await AddproductModel.findById(productId);
     if (!productExists) {
-      return res.status(400).json({ success: false, message: "Product does not exist" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Product does not exist" });
     }
 
-    // Check if product is already in the cart
     let cartItem = await Cart.findOne({ userId, productId });
 
     if (cartItem) {
-      // Increment quantity if already in cart
       cartItem.quantity += Number(quantity);
       await cartItem.save();
     } else {
-      // Add new cart item
       cartItem = new Cart({
         userId,
         productId,
@@ -50,21 +50,23 @@ const Cartinsert = async (req, res) => {
   }
 };
 
-// Get Cart
+
 const GetCart = async (req, res) => {
   try {
     const userId = req.user?.id;
 
     if (!userId) {
-      return res.status(401).json({ success: false, message: "User not authenticated" });
+      return res
+        .status(401)
+        .json({ success: false, message: "User not authenticated" });
     }
 
     const cartItems = await Cart.find({ userId }).populate(
       "productId",
-      "name price image category"
+      "name price image category",
     );
 
-    console.log("Cart Items:", cartItems); // Debug log
+    console.log("Cart Items:", cartItems); 
 
     res.status(200).json({
       success: true,

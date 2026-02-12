@@ -1,6 +1,6 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const AdminModel = require("../../model/adminmodel"); // adjust path
+const AdminModel = require("../../model/adminmodel"); 
 
 const AdminLogin = async (req, res) => {
   const { email, password } = req.body;
@@ -21,7 +21,7 @@ const AdminLogin = async (req, res) => {
    
     const token = jwt.sign(
       { id: user._id, email: user.email },
-      process.env.JWT_SECRET || "mySuperSecretKey123", // Use your own secret
+      process.env.JWT_SECRET || "mySuperSecretKey123", 
       { expiresIn: "1h" }
     );
 
