@@ -10,7 +10,7 @@ const Topbar = () => {
   return (
     <header className="w-full bg-white border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-5 py-4 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-pink-600 capitalize">Sandhya</h1>
+        <h1 className="text-2xl font-bold text-pink-600 capitalize">Sandesh</h1>
 
         <nav className="flex items-center gap-10">
           <div className="hidden md:flex items-center gap-6">

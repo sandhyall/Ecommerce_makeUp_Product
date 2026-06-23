@@ -6,7 +6,7 @@ const Footer = () => {
       <div className="max-w-6xl mx-auto px-6">
         <div className="flex flex-col md:flex-row justify-between gap-10">
           <div className="md:w-1/2">
-            <h1 className="text-pink-600 text-2xl font-bold mb-4">Sandhya</h1>
+            <h1 className="text-pink-600 text-2xl font-bold mb-4">Sandesh</h1>
             <p className="text-white text-sm leading-relaxed">
               Lorem ipsum dolor sit amet consectetur adipisicing elit. Sint ab
               minus eius id harum eum itaque debitis corporis voluptate!

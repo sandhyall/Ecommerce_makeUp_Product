@@ -195,6 +195,7 @@ const searchProduct = async (req, res) => {
         ],
       };
     }
+    
 
     const products = await AddproductModel.find(query);
 
