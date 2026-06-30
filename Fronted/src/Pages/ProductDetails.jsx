@@ -30,6 +30,7 @@ const ProductDetails = () => {
     setProduct(fetchedProduct);
     setSimilarProducts(similar);
     counter.setCount(1); 
+    
   } catch (err) {
     console.error("Failed to fetch product:", err);
   }
