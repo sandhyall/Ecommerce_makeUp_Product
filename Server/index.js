@@ -88,7 +88,7 @@ app.use(
 // Static Folder
 app.use("/upload", express.static("upload"));
 
-// Test Route
+
 app.get("/", (req, res) => {
   res.send("Server is running");
 });

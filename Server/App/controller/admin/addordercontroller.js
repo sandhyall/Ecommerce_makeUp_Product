@@ -4,7 +4,7 @@ const User = require("../../model/usermodel");
 const mongoose = require("mongoose");
 
 
-// Place Order
+
 const placeOrder = async (req, res) => {
   try {
     const userId = req.user.id;

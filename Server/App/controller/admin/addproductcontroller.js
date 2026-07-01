@@ -1,10 +1,21 @@
 const mongoose = require("mongoose");
 const AddproductModel = require("../../model/addproduct");
+const cloudinary = require("../../../config/cloud");
 
 const AddproductInsert = async (req, res) => {
   try {
     const { name, description, price, category, brand, color, isNewArrival } =
       req.body;
+
+    let imageUrl = null;
+
+    if (req.file) {
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: "products",
+      });
+
+      imageUrl = result.secure_url;
+    }
 
     const product = new AddproductModel({
       name,
@@ -14,10 +25,8 @@ const AddproductInsert = async (req, res) => {
       brand: brand || "-",
       color: color || "N/A",
       isNewArrival: true,
-
-      image: req.file ? req.file.filename : null,
+      image: imageUrl,
     });
-
     await product.save();
 
     res.status(201).json({
@@ -72,7 +81,14 @@ const AddproductEdit = async (req, res) => {
       isNewArrival: req.body.isNewArrival,
     };
 
-    if (req.file) updateData.image = req.file.filename;
+    // if (req.file) updateData.image = req.file.filename;
+    if (req.file) {
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: "products",
+      });
+
+      updateData.image = result.secure_url;
+    }
 
     const updatedProduct = await AddproductModel.findByIdAndUpdate(
       req.params.id,
@@ -179,7 +195,7 @@ const FilterAndSortProducts = async (req, res) => {
     res.status(500).json({ status: "error", msg: err.message });
   }
 };
-//search product
+
 const searchProduct = async (req, res) => {
   const { search } = req.query;
 
@@ -195,7 +211,6 @@ const searchProduct = async (req, res) => {
         ],
       };
     }
-    
 
     const products = await AddproductModel.find(query);
 
