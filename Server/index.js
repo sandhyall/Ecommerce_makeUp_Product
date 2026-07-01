@@ -79,7 +79,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://ecommerce-make-up-product-t7vc.vercel.app", 
+      "", 
     ],
     credentials: true,
   })
